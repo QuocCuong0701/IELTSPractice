@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -20,9 +21,13 @@ module.exports = {
           yellow: '#FFF5BA',
           'yellow-dark': '#FFEDA3',
           bg: '#FFF8F5',
+          'bg-dark': '#1a1625',
           'card-bg': '#FFFFFF',
+          'card-bg-dark': '#2a2540',
           text: '#4A4063',
           'text-light': '#8B7FAE',
+          'text-dark': '#E8E0F0',
+          'text-light-dark': '#9B8FB5',
         },
       },
       fontFamily: {
@@ -37,6 +42,7 @@ module.exports = {
         kawaii: '0 4px 16px rgba(195, 174, 214, 0.25)',
         'kawaii-lg': '0 8px 32px rgba(195, 174, 214, 0.3)',
         'kawaii-sm': '0 2px 8px rgba(195, 174, 214, 0.2)',
+        'kawaii-card-dark': '0 4px 16px rgba(0, 0, 0, 0.3)',
       },
       animation: {
         'bounce-in': 'bounceIn 0.5s ease-out',

@@ -2,17 +2,19 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Trophy, Flame, Star, BookOpen, BookText, Sparkles, Headphones, PenTool, ClipboardList, Award } from 'lucide-react'
+import { Trophy, Flame, Star, BookOpen, BookText, Sparkles, Headphones, PenTool, ClipboardList, Award, Mic } from 'lucide-react'
 import KawaiiCard from '@/components/ui/KawaiiCard'
 import Badge from '@/components/ui/Badge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { useLevel } from '@/context/LevelContext'
-import { getAllDailyLogs, getStreak, getAllQuizResults, getAchievements } from '@/lib/db'
+import { getAllDailyLogs, getStreak, getAllQuizResults, getAchievements, getMockTestResults, getSpeakingResults } from '@/lib/db'
 import { vocabularyData } from '@/data/vocabulary'
 import { grammarData } from '@/data/grammar'
 import { readingData } from '@/data/reading'
 import { listeningData } from '@/data/listening'
 import { writingData } from '@/data/writing'
+import type { MockTestResult } from '@/types/mock-test'
+import type { SpeakingResult } from '@/lib/db'
 
 interface DailyLog { date: string; wordsReviewed: number; exercisesDone: number; quizTaken: number; streak: number }
 interface QuizResult { date: number; skill: string; score: number; total: number }
@@ -30,6 +32,8 @@ export default function ProgressPage() {
   const [logs, setLogs] = useState<DailyLog[]>([])
   const [quizResults, setQuizResults] = useState<QuizResult[]>([])
   const [achievements, setAchievements] = useState<Achievement[]>([])
+  const [mockTests, setMockTests] = useState<MockTestResult[]>([])
+  const [speakingResults, setSpeakingResults] = useState<SpeakingResult[]>([])
   const [grammarScores, setGrammarScores] = useState<Record<number, number>>({})
   const [readingScores, setReadingScores] = useState<Record<number, number>>({})
 
@@ -39,6 +43,8 @@ export default function ProgressPage() {
       setLogs(await getAllDailyLogs(level))
       setQuizResults(await getAllQuizResults(level))
       setAchievements(await getAchievements(level))
+      setMockTests(await getMockTestResults())
+      setSpeakingResults(await getSpeakingResults())
     })()
     const gs = localStorage.getItem(`grammar_scores_${level}`)
     if (gs) setGrammarScores(JSON.parse(gs))
@@ -146,7 +152,7 @@ export default function ProgressPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <h2 className="text-lg font-extrabold text-kawaii-text mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-extrabold text-kawaii-text dark:text-kawaii-text-dark mb-3 flex items-center gap-2">
             <Flame size={18} className="text-orange-500" />
             Lịch sử Quiz
           </h2>
@@ -213,6 +219,87 @@ export default function ProgressPage() {
             </div>
           )}
         </div>
+      </div>
+
+      <div>
+        <h2 className="text-lg font-extrabold text-kawaii-text dark:text-kawaii-text-dark mb-3 flex items-center gap-2">
+          <Mic size={18} className="text-kawaii-pink-dark" />
+          Speaking History
+        </h2>
+        {speakingResults.length === 0 ? (
+          <KawaiiCard color="white">
+            <p className="text-sm text-kawaii-text-light dark:text-kawaii-text-light-dark text-center py-4">
+              Chưa có bài Speaking nào. Luyện nói ngay! ✦
+            </p>
+          </KawaiiCard>
+        ) : (
+          <div className="grid gap-3">
+            {speakingResults.slice(-5).reverse().map((r, i) => (
+              <KawaiiCard key={r.id ?? i} color={r.estimatedBand && r.estimatedBand >= 6 ? 'mint' : 'white'}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="pink">Part {r.part}</Badge>
+                      {r.estimatedBand && <Badge variant="mint">Band {r.estimatedBand}</Badge>}
+                    </div>
+                    <p className="text-xs text-kawaii-text-light dark:text-kawaii-text-light-dark mt-1">{r.topic}</p>
+                    <p className="text-[10px] text-kawaii-text-light/60">
+                      {new Date(r.date).toLocaleDateString('vi-VN')}
+                    </p>
+                  </div>
+                  <div className="flex gap-1">
+                    {r.scores && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-kawaii-full bg-kawaii-lavender/10 text-kawaii-text-light">
+                        F: {r.scores.fluency} V: {r.scores.vocabulary} G: {r.scores.grammar}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </KawaiiCard>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <h2 className="text-lg font-extrabold text-kawaii-text dark:text-kawaii-text-dark mb-3 flex items-center gap-2">
+          <ClipboardList size={18} className="text-kawaii-lavender-dark" />
+          Lịch sử Mock Test
+        </h2>
+        {mockTests.length === 0 ? (
+          <KawaiiCard color="white">
+            <p className="text-sm text-kawaii-text-light dark:text-kawaii-text-light-dark text-center py-4">
+              Chưa có kết quả mock test nào. Thi thử ngay! ✦
+            </p>
+          </KawaiiCard>
+        ) : (
+          <div className="grid gap-3">
+            {mockTests.slice(-5).reverse().map((t, i) => (
+              <KawaiiCard key={t.id ?? i} color={t.overallBand >= 6.5 ? 'mint' : t.overallBand >= 5.5 ? 'yellow' : 'white'}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="pink">Band {t.overallBand}</Badge>
+                      <span className="text-xs text-kawaii-text-light dark:text-kawaii-text-light-dark">
+                        {new Date(t.date).toLocaleDateString('vi-VN')}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 mt-2">
+                      {t.sectionResults.map((r) => (
+                        <span key={r.sectionId} className="text-[10px] px-2 py-0.5 rounded-kawaii-full bg-kawaii-lavender/10 text-kawaii-text-light dark:text-kawaii-text-light-dark">
+                          {r.title[0]}: {Math.round(r.percentage)}%
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <span className="text-xs text-kawaii-text-light dark:text-kawaii-text-light-dark">
+                    {t.sectionResults.reduce((s, r) => s + r.score, 0)}/{t.sectionResults.reduce((s, r) => s + r.total, 0)}
+                  </span>
+                </div>
+              </KawaiiCard>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

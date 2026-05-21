@@ -10,10 +10,29 @@ export interface GrammarLesson {
 }
 
 export interface GrammarExercise {
-  sentence: string
-  options: string[]
-  correctIndex: number
-  explanation: string
+  type?: 'mcq' | 'transformation' | 'error-correction'
+  sentence?: string
+  options?: string[]
+  correctIndex?: number
+  explanation?: string
+  instruction?: string
+  prompt?: string
+  answer?: string
+  hint?: string
+  error?: string
+  correction?: string
+}
+
+// Re-export as alias for component usage
+export type GrammarExerciseTransformation = GrammarExercise & { type: 'transformation'; instruction: string; prompt: string; answer: string }
+export type GrammarExerciseErrorCorrection = GrammarExercise & { type: 'error-correction'; sentence: string; error: string; correction: string }
+
+export interface WritingFunctionGroup {
+  id: string
+  title: string
+  description: string
+  functions: string[]
+  lessons: number[]  // references lesson IDs
 }
 
 export const grammarData: Record<Level, GrammarLesson[]> = {
@@ -163,6 +182,10 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
         { sentence: '___ he speak French?', options: ['Do', 'Does', 'Is', 'Has'], correctIndex: 1, explanation: 'Chủ ngữ "he" (ngôi thứ 3 số ít) → trợ động từ "Does"' },
         { sentence: 'My parents ___ (live) in Hanoi.', options: ['live', 'lives', 'living', 'lived'], correctIndex: 0, explanation: 'Chủ ngữ "My parents" (số nhiều) → động từ nguyên mẫu "live"' },
         { sentence: 'The train ___ (arrive) at 7pm every day.', options: ['arrive', 'arrives', 'arriving', 'arrived'], correctIndex: 1, explanation: 'Chủ ngữ "The train" (số ít) → thêm "s" → arrives' },
+        { type: 'transformation', instruction: 'Viết lại câu dùng thì hiện tại đơn với chủ ngữ mới.', prompt: 'He / go / school / every day.', answer: 'He goes to school every day.', hint: 'Nhớ thêm "es" vào động từ khi chủ ngữ là He/She/It' },
+        { type: 'transformation', instruction: 'Viết lại câu dùng thì hiện tại đơn (phủ định).', prompt: 'They / not / like / coffee.', answer: 'They don\'t like coffee.', hint: 'Dùng "don\'t" cho They/You/We/I' },
+        { type: 'error-correction', sentence: 'She go to school by bus.', error: 'Sai chia động từ: "go" với "She" phải là "goes"', correction: 'She goes to school by bus.', hint: '"She" là ngôi thứ 3 số ít' },
+        { type: 'error-correction', sentence: 'He don\'t like spicy food.', error: 'Sai trợ động từ: "He" phải dùng "doesn\'t"', correction: 'He doesn\'t like spicy food.', hint: 'Với He/She/It, dùng "doesn\'t" thay vì "don\'t"' },
       ],
     },
     {
@@ -195,10 +218,16 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
         { sentence: '___ you ___ (call) her yesterday?', options: ['Did / call', 'Did / called', 'Do / call', 'Does / call'], correctIndex: 0, explanation: 'Câu hỏi quá khứ → Did + S + V nguyên mẫu' },
         { sentence: 'They ___ (be) very happy at the party.', options: ['was', 'were', 'are', 'be'], correctIndex: 1, explanation: '"They" (số nhiều) ở quá khứ → were' },
         { sentence: 'He ___ (buy) a new car last month.', options: ['buy', 'buys', 'bought', 'buying'], correctIndex: 2, explanation: '"last month" → quá khứ, "buy" bất quy tắc → bought' },
+        { type: 'transformation', instruction: 'Đặt câu ở thì quá khứ đơn.', prompt: 'She / visit / her grandma / yesterday.', answer: 'She visited her grandma yesterday.', hint: 'Thêm "ed" cho động từ có quy tắc' },
+        { type: 'transformation', instruction: 'Chuyển sang câu phủ định quá khứ.', prompt: 'I / not / go / to the party / last night.', answer: 'I didn\'t go to the party last night.', hint: '"didn\'t" + V nguyên mẫu' },
+        { type: 'error-correction', sentence: 'She didn\'t went to school yesterday.', error: 'Sau "didn\'t" phải dùng động từ nguyên mẫu "go", không phải quá khứ "went"', correction: 'She didn\'t go to school yesterday.', hint: 'Nhớ: didn\'t + V (nguyên mẫu)' },
       ],
     },
     { id: 4, title: 'Future Simple', description: 'Thì tương lai đơn', explanation: 'Dùng để diễn tả quyết định tại thời điểm nói, lời hứa, dự đoán không có căn cứ.\n\nCấu trúc:\n- S + will + V (nguyên mẫu)\n- S + won\'t + V (nguyên mẫu)\n- Will + S + V (nguyên mẫu)?\n\nDấu hiệu: tomorrow, next week/month/year, soon, later', examples: [{ correct: 'I will help you with your homework.', incorrect: 'I will helping you.' }, { correct: 'She won\'t come to the meeting.' }, { correct: 'Will you open the window, please?' }], exercises: [{ sentence: 'I promise I ___ (call) you later.', options: ['call', 'will call', 'am calling', 'called'], correctIndex: 1, explanation: 'Lời hứa → will + V nguyên mẫu → will call' }, { sentence: 'It\'s raining. I ___ (take) an umbrella.', options: ['take', 'will take', 'am taking', 'took'], correctIndex: 1, explanation: 'Quyết định tại thời điểm nói → will take' }, { sentence: 'She ___ (not/come) to the party tomorrow.', options: ["won't come", "doesn't come", "isn't coming", "didn't come"], correctIndex: 0, explanation: '"tomorrow" + phủ định tương lai → won\'t come' }, { sentence: '___ you ___ (help) me with this?', options: ['Will / help', 'Do / help', 'Are / help', 'Did / help'], correctIndex: 0, explanation: 'Lời đề nghị → Will you help?' }, { sentence: 'I think it ___ (rain) later.', options: ['rains', 'will rain', 'is raining', 'rained'], correctIndex: 1, explanation: 'Dự đoán → will rain' }] },
-    { id: 5, title: 'Present Perfect', description: 'Thì hiện tại hoàn thành', explanation: 'Dùng để diễn tả hành động đã xảy ra nhưng không rõ thời gian, hoặc kéo dài từ quá khứ đến hiện tại.\n\nCấu trúc:\n- S + have/has + V3/ed\n- S + haven\'t/hasn\'t + V3/ed\n- Have/Has + S + V3/ed?\n\nDấu hiệu: ever, never, just, already, yet, since, for, recently', examples: [{ correct: 'I have visited London twice.', incorrect: 'I have visit London twice.' }, { correct: 'She has already finished her homework.' }, { correct: 'Have you ever tried sushi?', incorrect: 'Did you ever try sushi?' }], exercises: [{ sentence: 'I ___ (see) that movie already.', options: ['saw', 'have seen', 'see', 'am seeing'], correctIndex: 1, explanation: '"already" → hiện tại hoàn thành → have seen' }, { sentence: 'She ___ (live) here since 2019.', options: ['lives', 'lived', 'has lived', 'is living'], correctIndex: 2, explanation: '"since 2019" → từ quá khứ đến nay → has lived' }, { sentence: 'We ___ (not/finish) the project yet.', options: ["didn't finish", "haven't finished", "don't finish", "aren't finishing"], correctIndex: 1, explanation: '"yet" → hiện tại hoàn thành, phủ định → haven\'t finished' }, { sentence: '___ you ever ___ (be) to Japan?', options: ['Have / been', 'Did / go', 'Are / been', 'Will / be'], correctIndex: 0, explanation: '"ever" → hiện tại hoàn thành → Have you ever been' }, { sentence: 'He ___ (just / arrive).', options: ['just arrived', 'has just arrived', 'just arrives', 'is just arriving'], correctIndex: 1, explanation: '"just" → hiện tại hoàn thành → has just arrived' }] },
+    { id: 5, title: 'Present Perfect', description: 'Thì hiện tại hoàn thành', explanation: 'Dùng để diễn tả hành động đã xảy ra nhưng không rõ thời gian, hoặc kéo dài từ quá khứ đến hiện tại.\n\nCấu trúc:\n- S + have/has + V3/ed\n- S + haven\'t/hasn\'t + V3/ed\n- Have/Has + S + V3/ed?\n\nDấu hiệu: ever, never, just, already, yet, since, for, recently', examples: [{ correct: 'I have visited London twice.', incorrect: 'I have visit London twice.' }, { correct: 'She has already finished her homework.' }, { correct: 'Have you ever tried sushi?', incorrect: 'Did you ever try sushi?' }], exercises: [{ sentence: 'I ___ (see) that movie already.', options: ['saw', 'have seen', 'see', 'am seeing'], correctIndex: 1, explanation: '"already" → hiện tại hoàn thành → have seen' }, { sentence: 'She ___ (live) here since 2019.', options: ['lives', 'lived', 'has lived', 'is living'], correctIndex: 2, explanation: '"since 2019" → từ quá khứ đến nay → has lived' }, { sentence: 'We ___ (not/finish) the project yet.', options: ["didn't finish", "haven't finished", "don't finish", "aren't finishing"], correctIndex: 1, explanation: '"yet" → hiện tại hoàn thành, phủ định → haven\'t finished' }, { sentence: '___ you ever ___ (be) to Japan?', options: ['Have / been', 'Did / go', 'Are / been', 'Will / be'], correctIndex: 0, explanation: '"ever" → hiện tại hoàn thành → Have you ever been' },         { sentence: 'He ___ (just / arrive).', options: ['just arrived', 'has just arrived', 'just arrives', 'is just arriving'], correctIndex: 1, explanation: '"just" → hiện tại hoàn thành → has just arrived' },
+        { type: 'transformation', instruction: 'Viết câu dùng thì hiện tại hoàn thành.', prompt: 'I / see / that movie / already.', answer: 'I have already seen that movie.', hint: 'Dùng "have" + V3/ed, "already" đứng giữa have và V3' },
+        { type: 'error-correction', sentence: 'I have saw that movie already.', error: '"saw" là quá khứ đơn, hiện tại hoàn thành phải dùng "seen"', correction: 'I have seen that movie already.', hint: 'Hiện tại hoàn thành: have/has + V3/ed (seen, not saw)' },
+        { type: 'transformation', instruction: 'Viết câu hỏi hiện tại hoàn thành.', prompt: 'she / ever / be / to Japan ?', answer: 'Has she ever been to Japan?', hint: '"Has" cho She, "ever" đứng sau chủ ngữ' }] },
     { id: 6, title: 'Comparatives & Superlatives', description: 'So sánh hơn và so sánh nhất', explanation: 'So sánh hơn:\n- Tính từ ngắn: adj + er + than\n- Tính từ dài: more + adj + than\n\nSo sánh nhất:\n- Tính từ ngắn: the + adj + est\n- Tính từ dài: the most + adj\n\nBất quy tắc: good → better → the best; bad → worse → the worst', examples: [{ correct: 'She is taller than her sister.', incorrect: 'She is more tall than her sister.' }, { correct: 'This book is more interesting than that one.' }, { correct: 'He is the best student in the class.' }], exercises: [{ sentence: 'My house is ___ (big) than yours.', options: ['bigger', 'more big', 'biggest', 'biger'], correctIndex: 0, explanation: 'Tính từ ngắn "big" → gấp đôi phụ âm + er → bigger' }, { sentence: 'This is ___ (good) restaurant in town.', options: ['better', 'the best', 'best', 'more good'], correctIndex: 1, explanation: '"good" bất quy tắc, so sánh nhất → the best' }, { sentence: 'She speaks English ___ (fluently) than me.', options: ['fluentlyer', 'more fluently', 'most fluently', 'fluentlier'], correctIndex: 1, explanation: 'Trạng từ dài "fluently" → more fluently' }, { sentence: 'It\'s ___ (cold) day of the year.', options: ['colder', 'the coldest', 'more cold', 'coldest'], correctIndex: 1, explanation: '"of the year" → so sánh nhất, "cold" ngắn → the coldest' }, { sentence: 'Math is ___ (difficult) than English.', options: ['difficulter', 'more difficult', 'most difficult', 'difficultest'], correctIndex: 1, explanation: 'Tính từ dài "difficult" → more difficult' }] },
     { id: 7, title: 'Conditional Sentences Type 1', description: 'Câu điều kiện loại 1', explanation: 'Dùng để diễn tả điều kiện có thể xảy ra ở hiện tại hoặc tương lai.\n\nCấu trúc:\nIf + S + V (hiện tại), S + will + V (nguyên mẫu)\n\nVí dụ: If it rains, I will stay home.\n\n→ Mệnh đề "If" dùng thì hiện tại đơn, mệnh đề chính dùng will + V', examples: [{ correct: 'If you study hard, you will pass the exam.', incorrect: 'If you will study hard, you will pass.' }, { correct: 'I will call you if I need help.' }, { correct: 'If she doesn\'t hurry, she will miss the bus.' }], exercises: [{ sentence: 'If it ___ (rain), we will stay home.', options: ['will rain', 'rains', 'rained', 'is raining'], correctIndex: 1, explanation: 'Mệnh đề If dùng hiện tại đơn → rains' }, { sentence: 'She ___ (pass) the exam if she studies hard.', options: ['passes', 'will pass', 'passed', 'would pass'], correctIndex: 1, explanation: 'Mệnh đề chính dùng will + V → will pass' }, { sentence: 'If you ___ (not/hurry), you will miss the bus.', options: ["won't hurry", "don't hurry", "didn't hurry", "aren't hurrying"], correctIndex: 1, explanation: 'Mệnh đề If hiện tại đơn, phủ định → don\'t hurry' }, { sentence: 'What ___ you ___ if you lose your job?', options: ['will / do', 'do / do', 'would / do', 'are / doing'], correctIndex: 0, explanation: 'Mệnh đề chính → will + V → will you do' }, { sentence: 'If we ___ (leave) now, we will catch the train.', options: ['will leave', 'leave', 'left', 'are leaving'], correctIndex: 1, explanation: 'Mệnh đề If dùng hiện tại đơn → leave' }] },
     { id: 8, title: 'Passive Voice (Present)', description: 'Câu bị động (hiện tại)', explanation: 'Dùng khi muốn nhấn mạnh hành động hoặc đối tượng chịu tác động.\n\nCấu trúc hiện tại:\n- S + am/is/are + V3/ed + (by O)\n\nChủ động: The cat eats the fish.\nBị động: The fish is eaten by the cat.', examples: [{ correct: 'English is spoken all over the world.', incorrect: 'English is speak all over the world.' }, { correct: 'These cookies are made by my grandmother.' }, { correct: 'The room is cleaned every day.' }], exercises: [{ sentence: 'Rice ___ (grow) in Vietnam.', options: ['is grown', 'grows', 'is growing', 'grew'], correctIndex: 0, explanation: 'Bị động hiện tại, "Rice" số ít → is grown' }, { sentence: 'These songs ___ (sing) by many artists.', options: ['are sung', 'sing', 'are singing', 'sang'], correctIndex: 0, explanation: '"These songs" số nhiều → are sung' }, { sentence: 'Coffee ___ (not/produce) in cold countries.', options: ["doesn't produce", "isn't produced", "aren't produce", "isn't produce"], correctIndex: 1, explanation: '"Coffee" số ít, bị động phủ định → isn\'t produced' }, { sentence: '___ the letters ___ (deliver) every morning?', options: ['Are / delivered', 'Do / deliver', 'Is / delivered', 'Are / delivering'], correctIndex: 0, explanation: '"The letters" số nhiều + câu hỏi bị động → Are...delivered?' }, { sentence: 'The homework ___ (must / do) carefully.', options: ['must be done', 'must do', 'must done', 'must be do'], correctIndex: 0, explanation: 'Động từ khuyết thiếu + be + V3 → must be done' }] },
@@ -246,6 +275,9 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
         { sentence: 'I ___ (help) you if I could, but I\'m busy.', options: ['help', 'would help', 'would have helped', 'will help'], correctIndex: 1, explanation: 'Type 2: would + V nguyên mẫu → would help' },
         { sentence: 'If they had left earlier, they ___ (not/miss) the flight.', options: ["wouldn't miss", "wouldn't have missed", "didn't miss", "won't miss"], correctIndex: 1, explanation: 'Type 3: would have + V3 → wouldn\'t have missed' },
         { sentence: 'She ___ (not/be) upset if you apologized.', options: ["won't be", "wouldn't be", "wouldn't have been", "isn't"], correctIndex: 1, explanation: 'Type 2: would + V → wouldn\'t be' },
+        { type: 'transformation', instruction: 'Viết câu điều kiện loại 2.', prompt: 'If I / be / you, I / study / harder.', answer: 'If I were you, I would study harder.', hint: 'Type 2: If + V2/ed (were), would + V' },
+        { type: 'transformation', instruction: 'Viết câu điều kiện loại 3.', prompt: 'If she / study / harder, she / pass / the exam.', answer: 'If she had studied harder, she would have passed the exam.', hint: 'Type 3: If + had V3, would have V3' },
+        { type: 'error-correction', sentence: 'If I was you, I would accept the offer.', error: 'Trong câu điều kiện loại 2, phải dùng "were" cho tất cả ngôi, không phải "was"', correction: 'If I were you, I would accept the offer.', hint: 'Luôn dùng "were" thay "was" trong câu điều kiện' },
       ],
     },
     {
@@ -258,6 +290,10 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
         { sentence: 'The exam ___ (already/finish) when I arrived.', options: ['already finished', 'was already finished', 'had already been finished', 'has already been finished'], correctIndex: 2, explanation: 'Quá khứ hoàn thành bị động → had been finished' },
         { sentence: 'The report ___ (should/submit) by Friday.', options: ['should submit', 'should be submitted', 'should submitted', 'should be submit'], correctIndex: 1, explanation: 'Modal + be + V3 → should be submitted' },
         { sentence: 'English ___ (speak) all over the world.', options: ['speaks', 'is spoken', 'is speaking', 'has spoken'], correctIndex: 1, explanation: 'Hiện tại bị động: is spoken' },
+        { type: 'transformation', instruction: 'Chuyển câu chủ động sang bị động.', prompt: 'The cat eats the fish. → ?', answer: 'The fish is eaten by the cat.', hint: 'Tân ngữ (fish) → chủ ngữ mới. Động từ: be (chia theo thì) + V3' },
+        { type: 'transformation', instruction: 'Chuyển sang bị động (quá khứ).', prompt: 'They built this bridge in 1999. → ?', answer: 'This bridge was built in 1999.', hint: 'Quá khứ bị động: was/were + V3' },
+        { type: 'error-correction', sentence: 'The report was wrote by John.', error: '"wrote" là V2, bị động phải dùng V3 "written"', correction: 'The report was written by John.', hint: 'Bị động: be + V3/ed (written, not wrote)' },
+        { type: 'error-correction', sentence: 'English is speak all over the world.', error: 'Sau "is" phải là V3/ed, không phải nguyên mẫu', correction: 'English is spoken all over the world.', hint: 'Bị động hiện tại: is/am/are + V3/ed' },
       ],
     },
     {
@@ -337,14 +373,14 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
   'C1': [
     {
       id: 301, title: 'Advanced Inversion', description: 'Đảo ngữ nâng cao',
-      explanation: 'Các dạng đảo ngữ khác:\n\nSo... that: So expensive was the car that nobody could buy it.\nSuch... that: Such was his anger that he couldn\'t speak.\n\nNot until: Not until I got home did I realize I lost my phone.\n\nOnly after, only when, only by: Only after finishing work did she relax.\n\nĐảo ngữ với câu điều kiện (bỏ if):\nHad I known (If I had known)\nWere I you (If I were you)\nShould you need (If you need)',
+      explanation: 'Các dạng đảo ngữ khác:\n\nSo... that: So expensive was the car that nobody could buy it.\nSuch... that: Such was his anger that he couldn\'t speak.\n\nNot until: Not until I got home did I realise I lost my phone.\n\nOnly after, only when, only by: Only after finishing work did she relax.\n\nĐảo ngữ với câu điều kiện (bỏ if):\nHad I known (If I had known)\nWere I you (If I were you)\nShould you need (If you need)',
       examples: [{ correct: 'Had I known about the party, I would have gone.' }, { correct: 'Not until later did she understand the situation.' }],
       exercises: [
         { sentence: '___ I known earlier, I would have helped.', options: ['If', 'Had', 'Have', 'Should'], correctIndex: 1, explanation: 'Đảo ngữ câu điều kiện loại 3 → Had I known' },
         { sentence: 'Not until I saw it with my own eyes ___ I ___ (believe) it.', options: ['I believed', 'did I believe', 'I did believe', 'had I believed'], correctIndex: 1, explanation: '"Not until" đầu câu → did I believe' },
         { sentence: 'So ___ (be) the heat that we stayed indoors.', options: ['was', 'did', 'had', 'were'], correctIndex: 0, explanation: '"So...that" → So + adj + be + S' },
         { sentence: '___ you need assistance, please call me.', options: ['Had', 'Were', 'Should', 'If'], correctIndex: 2, explanation: 'Đảo ngữ điều kiện loại 1 → Should you need' },
-        { sentence: 'Only after she left ___ I ___ (realize) how much she meant to me.', options: ['I realized', 'did I realize', 'I did realize', 'had I realized'], correctIndex: 1, explanation: '"Only after" đầu câu → did I realize' },
+        { sentence: 'Only after she left ___ I ___ (realise) how much she meant to me.', options: ['I realised', 'did I realise', 'I did realise', 'had I realised'], correctIndex: 1, explanation: '"Only after" đầu câu → did I realise' },
       ],
     },
     {
@@ -431,6 +467,42 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
         { sentence: 'I propose that we ___ (delay) the meeting.', options: ['delay', 'delays', 'delayed', 'are delaying'], correctIndex: 0, explanation: 'Giả định: that we delay' },
       ],
     },
+    {
+      id: 309, title: 'Linking Words & Discourse Markers', description: 'Master linking words and discourse markers to improve the flow of your writing and speaking.',
+      explanation: 'Linking words and discourse markers connect ideas and guide the reader through your text. They are essential for achieving a high score in IELTS Coherence and Cohesion.\n\n**Additive** (thêm thông tin):\n- Furthermore / Moreover / In addition: formal, written\n- Besides / What is more: slightly informal\n- Also / Too: neutral, common in speaking\n\n**Adversative** (tương phản):\n- However / Nevertheless / Nonetheless: formal\n- On the other hand: contrasting viewpoints\n- In contrast / Whereas: comparing differences\n- Yet / Still: more common in writing\n\n**Causal** (nguyên nhân - kết quả):\n- Therefore / Consequently / Thus: formal, written\n- As a result / As a consequence: neutral\n- Hence / Accordingly: very formal\n- For this reason: common in essays\n\n**Sequential** (trình tự):\n- Firstly / To begin with: introducing points\n- Subsequently / Following this: continuing\n- Finally / Lastly: concluding\n- Meanwhile / Simultaneously: at the same time\n\n**Clarifying** (giải thích):\n- In other words: rephrasing\n- Namely / That is: specifying\n- To put it another way: simplifying\n- For instance / For example: giving evidence\n\n**Formal vs Informal Examples:**\nFormal: The experiment was inconclusive. Consequently, further research is required.\nInformal: The experiment didn\'t work. So we need to do more research.',
+      examples: [
+        { correct: 'The government has reduced funding for the arts. Furthermore, several museums have been forced to close.', incorrect: 'The government has reduced funding for the arts. So, several museums have been forced to close.' },
+        { correct: 'Many people believe that technology improves productivity. However, excessive screen time can reduce focus.', incorrect: 'Many people believe that technology improves productivity. But, excessive screen time can reduce focus.' },
+        { correct: 'Regular exercise improves physical health. In addition, it has been shown to boost mental wellbeing.' },
+        { correct: 'The company failed to innovate. Consequently, it lost its market share to competitors.' },
+        { correct: 'There are several reasons for this trend. Firstly, urban areas offer more employment opportunities. Secondly, younger generations are drawn to city lifestyles.' },
+      ],
+      exercises: [
+        { sentence: 'Which linking word best completes this sentence? "The new policy was unpopular ___ it led to significant savings."', options: ['however', 'nevertheless', 'nonetheless', 'therefore'], correctIndex: 3, explanation: '"Therefore" shows a cause-effect relationship: unpopular is the contrast but savings are the result.' },
+        { type: 'transformation', instruction: 'Rewrite the sentence using a more formal linking word.', prompt: 'The weather was bad, so the event was cancelled.', answer: 'The weather was bad; consequently, the event was cancelled.', hint: 'Replace "so" with "consequently" or "therefore".' },
+        { type: 'error-correction', sentence: 'He is very talented. In addition, he lacks confidence.', error: 'In addition', correction: 'However / Nevertheless', hint: 'The second sentence contrasts with the first, not adds to it.' },
+        { sentence: 'Which discourse marker is the MOST formal?', options: ['So', 'Thus', 'Also', 'But'], correctIndex: 1, explanation: '"Thus" is the most formal option, commonly used in academic writing.' },
+        { type: 'transformation', instruction: 'Rewrite the two sentences as one coherent sentence using a linking word.', prompt: 'Air pollution is harmful to health. The government should introduce stricter emission laws.', answer: 'Since air pollution is harmful to health, the government should introduce stricter emission laws.', hint: 'Use "since", "because", or "therefore" to connect the cause and effect.' },
+      ],
+    },
+    {
+      id: 310, title: 'Cohesive Devices: Reference & Substitution', description: 'Use reference words and substitution to create cohesion without repetition.',
+      explanation: 'Cohesive devices link sentences and paragraphs by referring back (or forward) to ideas without repeating them. The IELTS Writing marking criteria specifically assesses Coherence and Cohesion.\n\n**1. Personal Reference (Pronouns):**\nReplace nouns with he, she, it, they, him, her, them.\n→ Pollution is a serious issue. It affects millions of people worldwide.\n\n**2. Demonstrative Reference:**\n- This / These: refer to something close or just mentioned\n- That / Those: refer to something distant or previously mentioned\n→ Economic growth has slowed. This has led to rising unemployment.\n\n**3. Comparative Reference:**\nUse such, similar, likewise, the same, similarly, otherwise.\n→ The first experiment failed. A similar approach was attempted with better results.\n\n**4. Substitution:**\n- One/Ones: I prefer the blue shirt to the red one.\n- Do/Does: She speaks French better than I do.\n- So/Not: Do you think it will rain? I hope so. / I hope not.\n- Same: A: I\'m exhausted. B: The same here.\n\n**5. Ellipsis (Tỉnh lược):**\nOmit words that are understood from context.\n→ A: Who wants to go? B: I do. (want to go is elided)\n→ She can sing, but I can\'t. (sing is elided)\n\n**6. Lexical Cohesion:**\nRepetition, synonyms, superordinates, general words.\n→ The problem is complex. This issue requires careful consideration.',
+      examples: [
+        { correct: 'Some people believe that social media connects us. However, this is not always true, as it can also create isolation.', incorrect: 'Some people believe that social media connects us. However, this thing is not always true, as social media can also create isolation.' },
+        { correct: 'I need a pen. Do you have one?', incorrect: 'I need a pen. Do you have a pen?' },
+        { correct: 'The population is ageing. This trend presents challenges for healthcare systems.' },
+        { correct: 'A: Will you attend the meeting? B: I think so.' },
+        { correct: 'Students in urban areas outperform those in rural regions. Similarly, private school students tend to achieve higher scores than their public school counterparts.' },
+      ],
+      exercises: [
+        { sentence: 'Choose the correct reference word: "The economy is recovering. ___ is good news for job seekers."', options: ['This', 'That', 'They', 'It'], correctIndex: 3, explanation: '"It" refers back to "the economy is recovering" as a single idea/statement.' },
+        { type: 'error-correction', sentence: 'The experiments were repeated, but these did not produce the same results.', error: 'these', correction: 'they', hint: 'Since the experiments were mentioned in the previous clause, use "they" not "these" for personal reference.' },
+        { type: 'transformation', instruction: 'Rewrite the sentence using substitution to avoid repetition.', prompt: 'I like the green dress more than I like the blue dress.', answer: 'I like the green dress more than the blue one.', hint: 'Replace the second "dress" with "one".' },
+        { sentence: 'Which cohesive device is used in: "A: Is he coming? B: I hope so."?', options: ['Reference', 'Substitution', 'Ellipsis', 'Lexical cohesion'], correctIndex: 1, explanation: '"So" substitutes for the clause "he is coming".' },
+        { type: 'transformation', instruction: 'Combine these sentences using a demonstrative reference word.', prompt: 'The number of cars on the roads has increased dramatically. This increase has led to severe traffic congestion.', answer: 'The number of cars on the roads has increased dramatically. This has led to severe traffic congestion.', hint: 'Replace "This increase" with just "This" to refer back to the whole idea.' },
+      ],
+    },
   ],
 
   'C2': [
@@ -443,7 +515,7 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
         { sentence: 'Hardly ___ we ___ (sit) down when the fire alarm went off.', options: ['had / sat', 'did / sit', 'have / sat', 'were / sitting'], correctIndex: 0, explanation: '"Hardly...when" + quá khứ hoàn thành' },
         { sentence: '___ was her beauty that everyone stared.', options: ['Such', 'So', 'Very', 'Too'], correctIndex: 0, explanation: '"Such was... that" nhấn mạnh danh từ' },
         { sentence: 'Not only did she win, but she ___ set a new record.', options: ['also', 'too', 'as well', 'either'], correctIndex: 0, explanation: '"Not only... but also"' },
-        { sentence: 'The more I learn, ___ I realize I don\'t know.', options: ['the less', 'the more', 'less', 'more'], correctIndex: 1, explanation: '"The more... the more" = càng... càng' },
+        { sentence: 'The more I learn, ___ I realise I don\'t know.', options: ['the less', 'the more', 'less', 'more'], correctIndex: 1, explanation: '"The more... the more" = càng... càng' },
       ],
     },
     {
@@ -508,3 +580,41 @@ export const grammarData: Record<Level, GrammarLesson[]> = {
     },
   ],
 }
+
+export const writingFunctionGroups: WritingFunctionGroup[] = [
+  {
+    id: 'describe-trends',
+    title: 'Describing Trends',
+    description: 'Ngữ pháp để mô tả xu hướng và thay đổi (hữu ích cho Writing Task 1)',
+    functions: ['Present Simple', 'Past Simple', 'Future Simple', 'Comparatives & Superlatives', 'Passive Voice'],
+    lessons: [1, 3, 4, 6, 8],
+  },
+  {
+    id: 'express-opinion',
+    title: 'Expressing Opinions',
+    description: 'Cấu trúc thể hiện quan điểm, lời khuyên, sự bắt buộc (Writing Task 2)',
+    functions: ['Modal Verbs', 'Conditional Sentences', 'Reported Speech', 'Connectors'],
+    lessons: [9, 7, 13, 14],
+  },
+  {
+    id: 'compare-contrast',
+    title: 'Comparing & Contrasting',
+    description: 'Ngữ pháp so sánh, đối lập và tương phản',
+    functions: ['Comparatives & Superlatives', 'Connectors', 'Relative Clauses'],
+    lessons: [6, 14, 12],
+  },
+  {
+    id: 'time-sequence',
+    title: 'Time & Sequence',
+    description: 'Diễn tả thời gian, trình tự sự việc (kể chuyện, mô tả quy trình)',
+    functions: ['Past Simple', 'Present Perfect', 'Past Perfect', 'Future Continuous'],
+    lessons: [3, 5, 201, 202],
+  },
+  {
+    id: 'cause-effect',
+    title: 'Cause & Effect',
+    description: 'Diễn tả nguyên nhân và kết quả',
+    functions: ['Connectors (because, so, therefore)', 'Conditional Sentences', 'Passive Voice'],
+    lessons: [14, 7, 8, 204],
+  },
+]

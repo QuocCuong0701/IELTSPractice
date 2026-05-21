@@ -2,18 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Check, X, Lightbulb } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check, X, Lightbulb, PenTool, AlertTriangle, Type } from 'lucide-react'
+import Confetti from '@/components/ui/Confetti'
 import KawaiiCard from '@/components/ui/KawaiiCard'
 import KawaiiButton from '@/components/ui/KawaiiButton'
 import Badge from '@/components/ui/Badge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { useLevel } from '@/context/LevelContext'
-import { grammarData } from '@/data/grammar'
+import { grammarData, writingFunctionGroups } from '@/data/grammar'
 import { updateDailyLog } from '@/lib/db'
+import TransformationExercise from '@/components/grammar/TransformationExercise'
+import ErrorCorrectionExercise from '@/components/grammar/ErrorCorrectionExercise'
 
 export default function GrammarPage() {
   const { level } = useLevel()
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null)
+  const [exerciseMode, setExerciseMode] = useState<'mcq' | 'transformation' | 'error-correction'>('mcq')
   const [currentEx, setCurrentEx] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [showResult, setShowResult] = useState(false)
@@ -63,14 +67,28 @@ export default function GrammarPage() {
   }
 
   if (lesson && !completed) {
-    const ex = lesson.exercises[currentEx]
+    const mcqExercises = lesson.exercises.filter((e) => !e.type || e.type === 'mcq')
+    const transformationExercises = lesson.exercises.filter((e) => e.type === 'transformation') as import('@/data/grammar').GrammarExerciseTransformation[]
+    const errorCorrectionExercises = lesson.exercises.filter((e) => e.type === 'error-correction') as import('@/data/grammar').GrammarExerciseErrorCorrection[]
+    const ex = lesson.exercises.filter((e) => !e.type || e.type === exerciseMode)[currentEx]
+
+    if (exerciseMode === 'transformation' && transformationExercises.length > 0) {
+      return <TransformationExercise exercises={transformationExercises} onComplete={() => { resetLesson(); setSelectedLesson(null) }} onBack={() => setSelectedLesson(null)} />
+    }
+
+    if (exerciseMode === 'error-correction' && errorCorrectionExercises.length > 0) {
+      return <ErrorCorrectionExercise exercises={errorCorrectionExercises} onComplete={() => { resetLesson(); setSelectedLesson(null) }} onBack={() => setSelectedLesson(null)} />
+    }
+
+    const isMcq = !ex.type || ex.type === 'mcq'
+
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <KawaiiButton variant="ghost" size="sm" onClick={() => { setSelectedLesson(null); resetLesson() }}>
             <ChevronLeft size={18} /> Quay lại
           </KawaiiButton>
-          <Badge variant="lavender">{currentEx + 1}/{lesson.exercises.length}</Badge>
+          <Badge variant="lavender">{currentEx + 1}/{mcqExercises.length}</Badge>
         </div>
 
         <KawaiiCard color="lavender">
@@ -87,62 +105,94 @@ export default function GrammarPage() {
           ))}
         </KawaiiCard>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentEx}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-          >
-            <KawaiiCard color="white">
-              <p className="font-bold text-kawaii-text mb-4">{ex.sentence}</p>
-              <div className="space-y-2">
-                {ex.options.map((opt, i) => {
-                  let variant: 'white' | 'mint' | 'peach' = 'white'
-                  if (showResult) {
-                    if (i === ex.correctIndex) variant = 'mint'
-                    else if (i === selectedAnswer) variant = 'peach'
-                  }
-                  return (
-                    <KawaiiCard
-                      key={i}
-                      color={variant}
-                      hoverable
-                      onClick={() => handleSelect(i)}
-                      className={`cursor-pointer transition-all ${selectedAnswer !== null ? 'pointer-events-none' : ''}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-full bg-kawaii-lavender/10 flex items-center justify-center text-sm font-bold text-kawaii-text shrink-0">
-                          {String.fromCharCode(65 + i)}
-                        </span>
-                        <span className="text-sm font-semibold text-kawaii-text">{opt}</span>
-                        {showResult && i === ex.correctIndex && <Check size={18} className="text-green-500 ml-auto shrink-0" />}
-                        {showResult && i === selectedAnswer && i !== ex.correctIndex && <X size={18} className="text-red-400 ml-auto shrink-0" />}
-                      </div>
-                    </KawaiiCard>
-                  )
-                })}
-              </div>
-            </KawaiiCard>
-          </motion.div>
-        </AnimatePresence>
+        {/* Exercise type tabs */}
+        <div className="flex gap-2">
+          {mcqExercises.length > 0 && (
+            <button
+              onClick={() => { setExerciseMode('mcq'); resetLesson() }}
+              className={`kawaii-tag cursor-pointer ${exerciseMode === 'mcq' ? 'bg-kawaii-pink text-white' : 'bg-white text-kawaii-text-light border border-kawaii-lavender/20'}`}
+            >
+              <Type size={14} className="inline" /> MCQ
+            </button>
+          )}
+          {transformationExercises.length > 0 && (
+            <button
+              onClick={() => { setExerciseMode('transformation'); resetLesson() }}
+              className={`kawaii-tag cursor-pointer ${exerciseMode === 'transformation' ? 'bg-kawaii-pink text-white' : 'bg-white text-kawaii-text-light border border-kawaii-lavender/20'}`}
+            >
+              <PenTool size={14} className="inline" /> Transformation
+            </button>
+          )}
+          {errorCorrectionExercises.length > 0 && (
+            <button
+              onClick={() => { setExerciseMode('error-correction'); resetLesson() }}
+              className={`kawaii-tag cursor-pointer ${exerciseMode === 'error-correction' ? 'bg-kawaii-pink text-white' : 'bg-white text-kawaii-text-light border border-kawaii-lavender/20'}`}
+            >
+              <AlertTriangle size={14} className="inline" /> Error Correction
+            </button>
+          )}
+        </div>
 
-        {showResult && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-3"
-          >
-            <KawaiiCard color="yellow">
-              <div className="flex items-start gap-2">
-                <Lightbulb size={18} className="text-yellow-600 shrink-0 mt-0.5" />
-                <p className="text-sm text-kawaii-text">{ex.explanation}</p>
-              </div>
-            </KawaiiCard>
-            <KawaiiButton variant="pink" className="w-full" onClick={handleNext}>
-              {currentEx < lesson.exercises.length - 1 ? <>Tiếp theo <ChevronRight size={18} /></> : 'Hoàn thành'}
-            </KawaiiButton>
-          </motion.div>
+        {isMcq && ex && (
+          <>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentEx}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+              >
+                <KawaiiCard color="white">
+                  <p className="font-bold text-kawaii-text mb-4">{ex.sentence}</p>
+                  <div className="space-y-2">
+                    {ex.options?.map((opt, i) => {
+                      let variant: 'white' | 'mint' | 'peach' = 'white'
+                      if (showResult) {
+                        if (i === ex.correctIndex) variant = 'mint'
+                        else if (i === selectedAnswer) variant = 'peach'
+                      }
+                      return (
+                        <KawaiiCard
+                          key={i}
+                          color={variant}
+                          hoverable
+                          onClick={() => handleSelect(i)}
+                          className={`cursor-pointer transition-all ${selectedAnswer !== null ? 'pointer-events-none' : ''}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-full bg-kawaii-lavender/10 flex items-center justify-center text-sm font-bold text-kawaii-text shrink-0">
+                              {String.fromCharCode(65 + i)}
+                            </span>
+                            <span className="text-sm font-semibold text-kawaii-text">{opt}</span>
+                            {showResult && i === ex.correctIndex && <Check size={18} className="text-green-500 ml-auto shrink-0" />}
+                            {showResult && i === selectedAnswer && i !== ex.correctIndex && <X size={18} className="text-red-400 ml-auto shrink-0" />}
+                          </div>
+                        </KawaiiCard>
+                      )
+                    })}
+                  </div>
+                </KawaiiCard>
+              </motion.div>
+            </AnimatePresence>
+
+            {showResult && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-3"
+              >
+                <KawaiiCard color="yellow">
+                  <div className="flex items-start gap-2">
+                    <Lightbulb size={18} className="text-yellow-600 shrink-0 mt-0.5" />
+                    <p className="text-sm text-kawaii-text">{ex.explanation}</p>
+                  </div>
+                </KawaiiCard>
+                <KawaiiButton variant="pink" className="w-full" onClick={handleNext}>
+                  {currentEx < mcqExercises.length - 1 ? <>Tiếp theo <ChevronRight size={18} /></> : 'Hoàn thành'}
+                </KawaiiButton>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
     )
@@ -152,6 +202,7 @@ export default function GrammarPage() {
     const pct = Math.round((score / (lesson?.exercises.length || 1)) * 100)
     return (
       <div className="max-w-md mx-auto text-center space-y-6">
+        {pct >= 80 && <Confetti />}
         <KawaiiCard color="yellow">
           <div className="py-6">
             <p className="text-5xl mb-3">🎉</p>

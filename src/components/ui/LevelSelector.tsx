@@ -12,8 +12,10 @@ export default function LevelSelector() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
+        aria-label={`Chọn trình độ. Hiện tại: ${level}`}
+        aria-expanded={open}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-kawaii-full text-xs font-bold border-2 transition-all
-          ${levelColors[level]} hover:opacity-80`}
+          ${levelColors[level]} hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kawaii-lavender`}
       >
         {level}
         <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -22,7 +24,7 @@ export default function LevelSelector() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 z-50 w-36 bg-white rounded-kawaii shadow-kawaii-lg border border-kawaii-lavender/10 py-1 overflow-hidden">
+          <div className="absolute right-0 top-full mt-1 z-50 w-36 bg-white dark:bg-kawaii-card-bg-dark rounded-kawaii shadow-kawaii-lg dark:shadow-kawaii-card-dark border border-kawaii-lavender/10 py-1 overflow-hidden">
             {levels.map((l) => (
               <button
                 key={l}

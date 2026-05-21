@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Volume2, Check, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Volume2, Check, X, PenTool, Link2 } from 'lucide-react'
 import KawaiiCard from '@/components/ui/KawaiiCard'
 import KawaiiButton from '@/components/ui/KawaiiButton'
 import Badge from '@/components/ui/Badge'
@@ -10,10 +10,13 @@ import ProgressRing from '@/components/ui/ProgressRing'
 import { useLevel } from '@/context/LevelContext'
 import { vocabularyData, type VocabWord } from '@/data/vocabulary'
 import { getVocabProgress, updateVocabProgress, getDueVocabIds, updateDailyLog } from '@/lib/db'
+import { gapFillExercises, synonymMatchExercises } from '@/data/vocabulary-exercises'
+import GapFillExercise from '@/components/vocab/GapFillExercise'
+import SynonymMatchExercise from '@/components/vocab/SynonymMatchExercise'
 
 export default function VocabularyPage() {
   const { level } = useLevel()
-  const [mode, setMode] = useState<'list' | 'study'>('list')
+  const [mode, setMode] = useState<string>('list')
   const [selectedTopic, setSelectedTopic] = useState('All')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
@@ -92,6 +95,16 @@ export default function VocabularyPage() {
     }
   }
 
+  if (mode === 'gap-fill') {
+    const exercises = gapFillExercises[level] || []
+    return <GapFillExercise exercises={exercises} onComplete={() => {}} onBack={() => setMode('list')} />
+  }
+
+  if (mode === 'synonym-match') {
+    const exercises = synonymMatchExercises[level] || []
+    return <SynonymMatchExercise exercises={exercises} onComplete={() => {}} onBack={() => setMode('list')} />
+  }
+
   if (mode === 'study' && studyQueue.length > 0) {
     const word = studyQueue[currentIndex]
     return (
@@ -134,13 +147,46 @@ export default function VocabularyPage() {
                 <div className="text-center" style={{ transform: 'rotateY(180deg)' }}>
                   <p className="text-2xl font-extrabold text-kawaii-pink-dark mb-2">{word.meaning}</p>
                   <p className="text-sm text-kawaii-text italic mb-1">{word.example}</p>
-                  <Badge variant="mint">{word.topic}</Badge>
+                  <div className="flex justify-center gap-1.5 mt-2 flex-wrap">
+                    <Badge variant="mint">{word.topic}</Badge>
+                    <Badge variant="lavender">{word.partOfSpeech}</Badge>
+                  </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); speak(word.example) }}
                     className="mt-2 inline-flex items-center gap-1 text-xs text-kawaii-lavender-dark"
                   >
                     <Volume2 size={14} /> Nghe ví dụ
                   </button>
+                  {word.collocations && word.collocations.length > 0 && (
+                    <div className="mt-3 text-left">
+                      <p className="text-xs font-bold text-kawaii-text-light mb-1">Collocations:</p>
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {word.collocations.map((c) => (
+                          <span key={c} className="text-xs bg-kawaii-peach/20 rounded-full px-2 py-0.5 text-kawaii-text">{c}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {word.synonyms && word.synonyms.length > 0 && (
+                    <div className="mt-2 text-left">
+                      <p className="text-xs font-bold text-kawaii-text-light mb-1">Synonyms:</p>
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {word.synonyms.map((s) => (
+                          <span key={s} className="text-xs bg-kawaii-mint/20 rounded-full px-2 py-0.5 text-kawaii-text">{s}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {word.wordFamily && word.wordFamily.length > 0 && (
+                    <div className="mt-2 text-left">
+                      <p className="text-xs font-bold text-kawaii-text-light mb-1">Word Family:</p>
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {word.wordFamily.map((wf) => (
+                          <span key={wf} className="text-xs bg-kawaii-lavender/20 rounded-full px-2 py-0.5 text-kawaii-text">{wf}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -179,7 +225,7 @@ export default function VocabularyPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-kawaii-text">Từ vựng</h1>
-          <p className="text-kawaii-text-light font-semibold mt-1">200+ từ IELTS B1 theo chủ đề</p>
+          <p className="text-kawaii-text-light font-semibold mt-1">{words.length}+ từ IELTS theo chủ đề</p>
         </div>
         <div className="flex items-center gap-3">
           <ProgressRing progress={totalCount > 0 ? (learnedCount / totalCount) * 100 : 0} size={56} strokeWidth={5} />
@@ -187,6 +233,28 @@ export default function VocabularyPage() {
             <Shuffle size={18} /> Học ngay
           </KawaiiButton>
         </div>
+      </div>
+
+      {/* Exercise tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        <button
+          onClick={() => setMode('list')}
+          className={`shrink-0 kawaii-tag cursor-pointer transition-all ${mode === 'list' ? 'bg-kawaii-pink text-white shadow-kawaii-sm' : 'bg-white text-kawaii-text-light border border-kawaii-lavender/20'}`}
+        >
+          📖 Danh sách
+        </button>
+        <button
+          onClick={() => setMode('gap-fill')}
+          className={`shrink-0 kawaii-tag cursor-pointer transition-all ${mode === 'gap-fill' ? 'bg-kawaii-pink text-white shadow-kawaii-sm' : 'bg-white text-kawaii-text-light border border-kawaii-lavender/20'}`}
+        >
+          <PenTool size={14} className="inline" /> Gap-fill
+        </button>
+        <button
+          onClick={() => setMode('synonym-match')}
+          className={`shrink-0 kawaii-tag cursor-pointer transition-all ${mode === 'synonym-match' ? 'bg-kawaii-pink text-white shadow-kawaii-sm' : 'bg-white text-kawaii-text-light border border-kawaii-lavender/20'}`}
+        >
+          <Link2 size={14} className="inline" /> Nối từ
+        </button>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">

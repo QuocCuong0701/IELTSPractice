@@ -1,5 +1,6 @@
 import Dexie, { Table } from 'dexie'
 import type { Level } from '@/context/LevelContext'
+import type { MockTestResult } from '@/types/mock-test'
 
 export interface VocabProgress {
   id?: number
@@ -39,19 +40,42 @@ export interface Achievement {
   unlockedAt: number
 }
 
+export interface SpeakingResult {
+  id?: number
+  level: Level
+  date: number
+  topic: string
+  part: number
+  transcript: string
+  estimatedBand?: number
+  scores?: {
+    fluency: number
+    vocabulary: number
+    grammar: number
+    pronunciation: number
+    taskAchievement: number
+  }
+  selfEval: Record<string, boolean>
+}
+
 class EnglishDB extends Dexie {
   vocabProgress!: Table<VocabProgress, number>
   quizResults!: Table<QuizResult, number>
   dailyLogs!: Table<DailyLog, number>
   achievements!: Table<Achievement, number>
+  mockTestResults!: Table<MockTestResult, number>
+  speakingResults!: Table<SpeakingResult, number>
 
   constructor() {
     super('KawaiiEnglishDB')
-    this.version(2).stores({
+    // v1–2: initial schema; v3 skipped (schema unchanged); v4: added mockTestResults & speakingResults
+    this.version(4).stores({
       vocabProgress: '++id, level, wordId, nextReview',
       quizResults: '++id, level, date, skill',
       dailyLogs: '++id, level, date',
       achievements: '++id, level, type',
+      mockTestResults: '++id, testId, date',
+      speakingResults: '++id, level, date, part',
     })
   }
 }
@@ -210,6 +234,23 @@ export async function unlockAchievement(type: string, level: Level) {
 
 export async function getAchievements(level: Level) {
   return db.achievements.where({ level }).toArray()
+}
+
+export async function saveMockTestResult(result: MockTestResult) {
+  return db.mockTestResults.add(result)
+}
+
+export async function getMockTestResults() {
+  return db.mockTestResults.reverse().sortBy('date')
+}
+
+export async function saveSpeakingResult(result: SpeakingResult) {
+  return db.speakingResults.add(result)
+}
+
+export async function getSpeakingResults(level?: Level) {
+  if (level) return db.speakingResults.where({ level }).reverse().sortBy('date')
+  return db.speakingResults.reverse().sortBy('date')
 }
 
 export default db

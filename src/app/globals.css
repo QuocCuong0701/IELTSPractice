@@ -17,8 +17,18 @@
     background-size: 24px 24px;
   }
 
+  .dark body,
+  body.dark {
+    @apply bg-kawaii-bg-dark text-kawaii-text-dark;
+    background-image: radial-gradient(#3A2D5C 1px, transparent 1px);
+  }
+
   ::selection {
     @apply bg-kawaii-pink/30;
+  }
+
+  .dark ::selection {
+    @apply bg-kawaii-lavender/40;
   }
 }
 
@@ -29,6 +39,10 @@
 
   .kawaii-card {
     @apply rounded-kawaii bg-white p-6 shadow-kawaii transition-all duration-200;
+  }
+
+  .dark .kawaii-card {
+    @apply bg-kawaii-card-bg-dark shadow-kawaii-card-dark;
   }
 
   .kawaii-card:hover {
@@ -49,6 +63,12 @@
            focus:ring-kawaii-lavender/20 transition-all duration-200;
   }
 
+  .dark .kawaii-input {
+    @apply bg-kawaii-card-bg-dark border-kawaii-lavender/20 text-kawaii-text-dark 
+           placeholder:text-kawaii-text-light-dark/50
+           focus:border-kawaii-lavender-dark;
+  }
+
   .kawaii-tag {
     @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold;
   }
@@ -60,10 +80,18 @@
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
+  .dark .bottom-nav {
+    @apply bg-kawaii-card-bg-dark/90 border-kawaii-lavender/10;
+  }
+
   .sidebar-nav {
     @apply hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-full 
            lg:w-64 lg:bg-white lg:border-r lg:border-kawaii-lavender/10 
            lg:py-8 lg:px-4 lg:z-40;
+  }
+
+  .dark .sidebar-nav {
+    @apply bg-kawaii-card-bg-dark border-kawaii-lavender/10;
   }
 }
 

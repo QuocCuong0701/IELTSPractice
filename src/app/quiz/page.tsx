@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Check, X, RefreshCw, Clock } from 'lucide-react'
+import Confetti from '@/components/ui/Confetti'
 import KawaiiCard from '@/components/ui/KawaiiCard'
 import KawaiiButton from '@/components/ui/KawaiiButton'
 import Badge from '@/components/ui/Badge'
@@ -13,14 +14,7 @@ import { grammarData } from '@/data/grammar'
 import { readingData } from '@/data/reading'
 import { listeningData } from '@/data/listening'
 import { saveQuizResult, updateDailyLog } from '@/lib/db'
-
-interface QuizQuestion {
-  type: string
-  question: string
-  options: string[]
-  correctIndex: number
-  explanation: string
-}
+import type { QuizQuestion } from '@/types/quiz'
 
 function generateQuestions(level: Level): QuizQuestion[] {
   const questions: QuizQuestion[] = []
@@ -45,7 +39,9 @@ function generateQuestions(level: Level): QuizQuestion[] {
 
   const grammars = grammarList.sort(() => Math.random() - 0.5).slice(0, 3)
   for (const g of grammars) {
-    const ex = g.exercises[Math.floor(Math.random() * g.exercises.length)]
+    const mcqs = g.exercises.filter((e) => !e.type || e.type === 'mcq') as { sentence: string; options: string[]; correctIndex: number; explanation: string }[]
+    if (mcqs.length === 0) continue
+    const ex = mcqs[Math.floor(Math.random() * mcqs.length)]
     questions.push({
       type: 'Ngữ pháp',
       question: ex.sentence,
@@ -57,7 +53,9 @@ function generateQuestions(level: Level): QuizQuestion[] {
 
   const readings = readingList.sort(() => Math.random() - 0.5).slice(0, 3)
   for (const r of readings) {
-    const q = r.questions[Math.floor(Math.random() * r.questions.length)]
+    const mcqs = r.questions.filter((qq): qq is import('@/data/reading').MCQReadingQuestion => 'question' in qq)
+    if (mcqs.length === 0) continue
+    const q = mcqs[Math.floor(Math.random() * mcqs.length)]
     questions.push({
       type: 'Đọc hiểu',
       question: q.question,
@@ -69,7 +67,9 @@ function generateQuestions(level: Level): QuizQuestion[] {
 
   const listenings = listeningList.sort(() => Math.random() - 0.5).slice(0, 2)
   for (const l of listenings) {
-    const s = l.sentences[Math.floor(Math.random() * l.sentences.length)]
+    const mcqs = l.questions.filter((q) => q.type === 'mcq') as import('@/data/listening').MCQQuestion[]
+    if (mcqs.length === 0) continue
+    const s = mcqs[Math.floor(Math.random() * mcqs.length)]
     questions.push({
       type: 'Nghe',
       question: s.question,
@@ -163,6 +163,7 @@ export default function QuizPage() {
     const pct = Math.round((score / questions.length) * 100)
     return (
       <div className="max-w-md mx-auto text-center space-y-6">
+        {pct >= 80 && <Confetti />}
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
           <KawaiiCard color="yellow">
             <div className="py-6">
