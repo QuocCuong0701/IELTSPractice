@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Nunito', sans-serif;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-kawaii-bg text-kawaii-text antialiased;
+    background-image: radial-gradient(#C3AED6 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  ::selection {
+    @apply bg-kawaii-pink/30;
+  }
+}
+
+@layer components {
+  .kawaii-container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .kawaii-card {
+    @apply rounded-kawaii bg-white p-6 shadow-kawaii transition-all duration-200;
+  }
+
+  .kawaii-card:hover {
+    @apply shadow-kawaii-lg -translate-y-0.5;
+  }
+
+  .kawaii-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-kawaii-full 
+           px-6 py-3 font-bold transition-all duration-200 
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+           min-h-[44px] min-w-[44px] text-center;
+  }
+
+  .kawaii-input {
+    @apply w-full rounded-kawaii border-2 border-kawaii-lavender/30 bg-white 
+           px-4 py-3 text-kawaii-text placeholder:text-kawaii-text-light/50
+           focus:border-kawaii-lavender focus:outline-none focus:ring-2 
+           focus:ring-kawaii-lavender/20 transition-all duration-200;
+  }
+
+  .kawaii-tag {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold;
+  }
+
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around 
+           bg-white/80 backdrop-blur-lg border-t border-kawaii-lavender/10 
+           py-2 px-4 lg:hidden;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .sidebar-nav {
+    @apply hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-full 
+           lg:w-64 lg:bg-white lg:border-r lg:border-kawaii-lavender/10 
+           lg:py-8 lg:px-4 lg:z-40;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-kawaii-pink-dark to-kawaii-lavender-dark 
+           bg-clip-text text-transparent;
+  }
+
+  .kawaii-pattern-dots {
+    background-image: radial-gradient(#C3AED6 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
