@@ -94,25 +94,73 @@ export const gapFillExercises: Record<Level, GapFillExercise[]> = {
 
 export const synonymMatchExercises: Record<Level, SynonymMatchExercise[]> = {
   'A1-A2': [
-    { id: 1, pairs: [{ word: 'big', synonym: 'large' }, { word: 'small', synonym: 'tiny' }, { word: 'happy', synonym: 'glad' }, { word: 'begin', synonym: 'start' }] },
-    { id: 2, pairs: [{ word: 'quick', synonym: 'fast' }, { word: 'pretty', synonym: 'beautiful' }, { word: 'smart', synonym: 'clever' }, { word: 'quiet', synonym: 'silent' }] },
+    { id: 1, pairs: [
+      { word: 'big', synonym: 'large' }, { word: 'small', synonym: 'tiny' }, { word: 'happy', synonym: 'glad' }, { word: 'begin', synonym: 'start' },
+      { word: 'sad', synonym: 'unhappy' }, { word: 'nice', synonym: 'kind' }, { word: 'old', synonym: 'ancient' }, { word: 'new', synonym: 'recent' },
+      { word: 'love', synonym: 'like' }, { word: 'look', synonym: 'see' },
+    ] },
+    { id: 2, pairs: [
+      { word: 'quick', synonym: 'fast' }, { word: 'pretty', synonym: 'beautiful' }, { word: 'smart', synonym: 'clever' }, { word: 'quiet', synonym: 'silent' },
+      { word: 'loud', synonym: 'noisy' }, { word: 'rich', synonym: 'wealthy' }, { word: 'poor', synonym: 'needy' }, { word: 'strong', synonym: 'powerful' },
+      { word: 'weak', synonym: 'frail' }, { word: 'easy', synonym: 'simple' },
+    ] },
   ],
   'B1': [
-    { id: 3, pairs: [{ word: 'difficult', synonym: 'challenging' }, { word: 'important', synonym: 'significant' }, { word: 'improve', synonym: 'enhance' }, { word: 'choose', synonym: 'select' }] },
-    { id: 4, pairs: [{ word: 'help', synonym: 'assist' }, { word: 'show', synonym: 'demonstrate' }, { word: 'enough', synonym: 'sufficient' }, { word: 'clear', synonym: 'obvious' }] },
-    { id: 5, pairs: [{ word: 'answer', synonym: 'reply' }, { word: 'protect', synonym: 'defend' }, { word: 'happen', synonym: 'occur' }, { word: 'change', synonym: 'modify' }] },
+    { id: 3, pairs: [
+      { word: 'difficult', synonym: 'challenging' }, { word: 'important', synonym: 'significant' }, { word: 'improve', synonym: 'enhance' }, { word: 'choose', synonym: 'select' },
+      { word: 'suggest', synonym: 'recommend' }, { word: 'explain', synonym: 'clarify' }, { word: 'allow', synonym: 'permit' }, { word: 'require', synonym: 'need' },
+      { word: 'connect', synonym: 'link' }, { word: 'create', synonym: 'produce' },
+    ] },
+    { id: 4, pairs: [
+      { word: 'help', synonym: 'assist' }, { word: 'show', synonym: 'demonstrate' }, { word: 'enough', synonym: 'sufficient' }, { word: 'clear', synonym: 'obvious' },
+      { word: 'decide', synonym: 'determine' }, { word: 'inform', synonym: 'notify' }, { word: 'continue', synonym: 'proceed' }, { word: 'succeed', synonym: 'accomplish' },
+      { word: 'prevent', synonym: 'stop' }, { word: 'prepare', synonym: 'arrange' },
+    ] },
+    { id: 5, pairs: [
+      { word: 'answer', synonym: 'reply' }, { word: 'protect', synonym: 'defend' }, { word: 'happen', synonym: 'occur' }, { word: 'change', synonym: 'modify' },
+      { word: 'discover', synonym: 'find' }, { word: 'consider', synonym: 'think' }, { word: 'increase', synonym: 'rise' }, { word: 'decrease', synonym: 'fall' },
+      { word: 'encourage', synonym: 'motivate' }, { word: 'respect', synonym: 'admire' },
+    ] },
   ],
   'B2': [
-    { id: 6, pairs: [{ word: 'assess', synonym: 'evaluate' }, { word: 'obtain', synonym: 'acquire' }, { word: 'reveal', synonym: 'disclose' }, { word: 'maintain', synonym: 'sustain' }] },
-    { id: 7, pairs: [{ word: 'crucial', synonym: 'essential' }, { word: 'eliminate', synonym: 'remove' }, { word: 'relevant', synonym: 'pertinent' }, { word: 'reluctant', synonym: 'unwilling' }] },
-    { id: 8, pairs: [{ word: 'diminish', synonym: 'decrease' }, { word: 'predominant', synonym: 'dominant' }, { word: 'rigorous', synonym: 'stringent' }, { word: 'plausible', synonym: 'credible' }] },
+    { id: 6, pairs: [
+      { word: 'assess', synonym: 'evaluate' }, { word: 'obtain', synonym: 'acquire' }, { word: 'reveal', synonym: 'disclose' }, { word: 'maintain', synonym: 'sustain' },
+      { word: 'analyze', synonym: 'examine' }, { word: 'formulate', synonym: 'develop' }, { word: 'implement', synonym: 'execute' }, { word: 'verify', synonym: 'confirm' },
+      { word: 'allocate', synonym: 'assign' }, { word: 'constitute', synonym: 'comprise' },
+    ] },
+    { id: 7, pairs: [
+      { word: 'crucial', synonym: 'essential' }, { word: 'eliminate', synonym: 'remove' }, { word: 'relevant', synonym: 'pertinent' }, { word: 'reluctant', synonym: 'unwilling' },
+      { word: 'compensate', synonym: 'offset' }, { word: 'complement', synonym: 'supplement' }, { word: 'incorporate', synonym: 'integrate' }, { word: 'negotiate', synonym: 'bargain' },
+      { word: 'demonstrate', synonym: 'prove' }, { word: 'contradict', synonym: 'challenge' },
+    ] },
+    { id: 8, pairs: [
+      { word: 'diminish', synonym: 'decrease' }, { word: 'predominant', synonym: 'dominant' }, { word: 'rigorous', synonym: 'stringent' }, { word: 'plausible', synonym: 'credible' },
+      { word: 'fluctuate', synonym: 'vary' }, { word: 'speculate', synonym: 'conjecture' }, { word: 'undermine', synonym: 'weaken' }, { word: 'reinforce', synonym: 'strengthen' },
+      { word: 'stimulate', synonym: 'encourage' }, { word: 'utilize', synonym: 'employ' },
+    ] },
   ],
   'C1': [
-    { id: 9, pairs: [{ word: 'ambiguous', synonym: 'vague' }, { word: 'meticulous', synonym: 'thorough' }, { word: 'impartial', synonym: 'unbiased' }, { word: 'skeptical', synonym: 'doubtful' }] },
-    { id: 10, pairs: [{ word: 'superficial', synonym: 'shallow' }, { word: 'profound', synonym: 'deep' }, { word: 'negligible', synonym: 'minimal' }, { word: 'simultaneous', synonym: 'concurrent' }] },
+    { id: 9, pairs: [
+      { word: 'ambiguous', synonym: 'vague' }, { word: 'meticulous', synonym: 'thorough' }, { word: 'impartial', synonym: 'unbiased' }, { word: 'skeptical', synonym: 'doubtful' },
+      { word: 'comprehensive', synonym: 'exhaustive' }, { word: 'detrimental', synonym: 'harmful' }, { word: 'facilitate', synonym: 'ease' }, { word: 'illuminate', synonym: 'clarify' },
+      { word: 'profound', synonym: 'deep' }, { word: 'stringent', synonym: 'strict' },
+    ] },
+    { id: 10, pairs: [
+      { word: 'superficial', synonym: 'shallow' }, { word: 'profound', synonym: 'deep' }, { word: 'negligible', synonym: 'minimal' }, { word: 'simultaneous', synonym: 'concurrent' },
+      { word: 'pragmatic', synonym: 'practical' }, { word: 'coherent', synonym: 'logical' }, { word: 'concise', synonym: 'brief' }, { word: 'plausible', synonym: 'believable' },
+      { word: 'prevalent', synonym: 'widespread' }, { word: 'spontaneous', synonym: 'impulsive' },
+    ] },
   ],
   'C2': [
-    { id: 11, pairs: [{ word: 'ephemeral', synonym: 'fleeting' }, { word: 'ubiquitous', synonym: 'omnipresent' }, { word: 'laconic', synonym: 'terse' }, { word: 'obfuscate', synonym: 'obscure' }] },
-    { id: 12, pairs: [{ word: 'cacophony', synonym: 'discord' }, { word: 'sycophant', synonym: 'flatterer' }, { word: 'reprehensible', synonym: 'deplorable' }, { word: 'perfunctory', synonym: 'cursory' }] },
+    { id: 11, pairs: [
+      { word: 'ephemeral', synonym: 'fleeting' }, { word: 'ubiquitous', synonym: 'omnipresent' }, { word: 'laconic', synonym: 'terse' }, { word: 'obfuscate', synonym: 'obscure' },
+      { word: 'antithesis', synonym: 'opposite' }, { word: 'delineate', synonym: 'outline' }, { word: 'fastidious', synonym: 'particular' }, { word: 'grandiose', synonym: 'pretentious' },
+      { word: 'idiosyncratic', synonym: 'peculiar' }, { word: 'juxtaposition', synonym: 'contrast' },
+    ] },
+    { id: 12, pairs: [
+      { word: 'cacophony', synonym: 'discord' }, { word: 'sycophant', synonym: 'flatterer' }, { word: 'reprehensible', synonym: 'deplorable' }, { word: 'perfunctory', synonym: 'cursory' },
+      { word: 'quintessential', synonym: 'typical' }, { word: 'nonchalant', synonym: 'casual' }, { word: 'specious', synonym: 'misleading' }, { word: 'taciturn', synonym: 'reserved' },
+      { word: 'unequivocal', synonym: 'unambiguous' }, { word: 'verisimilitude', synonym: 'realism' },
+    ] },
   ],
 }

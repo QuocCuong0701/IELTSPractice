@@ -8,7 +8,7 @@ import KawaiiButton from '@/components/ui/KawaiiButton'
 import Badge from '@/components/ui/Badge'
 import { useLevel } from '@/context/LevelContext'
 import { writingData, type TaskType } from '@/data/writing'
-import { updateDailyLog } from '@/lib/db'
+import { updateDailyLog, saveWritingProgress } from '@/lib/db'
 
 export default function WritingPage() {
   const { level } = useLevel()
@@ -36,6 +36,10 @@ export default function WritingPage() {
 
   const handleDone = () => {
     setSubmitted(true)
+    if (prompt) {
+      const checkedCount = Object.keys(checkedItems).length
+      saveWritingProgress(level, prompt.id, checkedCount, prompt.checklist.length, wordCount)
+    }
     updateDailyLog('exercisesDone', level)
   }
 

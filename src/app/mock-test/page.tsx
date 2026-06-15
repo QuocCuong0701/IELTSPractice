@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 import { Headphones, BookOpen, PenTool, Mic, Play, Target } from 'lucide-react'
 import KawaiiCard from '@/components/ui/KawaiiCard'
 import KawaiiButton from '@/components/ui/KawaiiButton'
@@ -15,7 +16,8 @@ const sectionIcons: Record<string, typeof Headphones> = {
   speaking: Mic,
 }
 
-export default function MockTestPage() {
+export default function MockTestListPage() {
+  const router = useRouter()
   const { level } = useLevel()
 
   return (
@@ -67,12 +69,10 @@ export default function MockTestPage() {
                     <span>Trình độ hiện tại: {level}</span>
                   </div>
                 </div>
-                <a href={`/mock-test/${test.id}`}>
-                  <KawaiiButton variant="pink">
-                    <Play size={16} />
-                    Start
-                  </KawaiiButton>
-                </a>
+                <KawaiiButton variant="pink" onClick={() => router.push(`/mock-test/${test.id}`)}>
+                  <Play size={16} />
+                  Start
+                </KawaiiButton>
               </div>
             </KawaiiCard>
           </motion.div>

@@ -102,7 +102,15 @@ export default function VocabularyPage() {
 
   if (mode === 'synonym-match') {
     const exercises = synonymMatchExercises[level] || []
-    return <SynonymMatchExercise exercises={exercises} onComplete={() => {}} onBack={() => setMode('list')} />
+    return (
+      <SynonymMatchExercise
+        exercises={exercises}
+        onComplete={(score, total) => {
+          updateDailyLog('exercisesDone', level)
+        }}
+        onBack={() => setMode('list')}
+      />
+    )
   }
 
   if (mode === 'study' && studyQueue.length > 0) {

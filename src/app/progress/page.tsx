@@ -7,14 +7,14 @@ import KawaiiCard from '@/components/ui/KawaiiCard'
 import Badge from '@/components/ui/Badge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { useLevel } from '@/context/LevelContext'
-import { getAllDailyLogs, getStreak, getAllQuizResults, getAchievements, getMockTestResults, getSpeakingResults } from '@/lib/db'
+import { getAllDailyLogs, getStreak, getAllQuizResults, getAchievements, getMockTestResults, getSpeakingResults, getAllVocabProgress, getAllListeningProgress, getAllWritingProgress } from '@/lib/db'
 import { vocabularyData } from '@/data/vocabulary'
 import { grammarData } from '@/data/grammar'
 import { readingData } from '@/data/reading'
 import { listeningData } from '@/data/listening'
 import { writingData } from '@/data/writing'
 import type { MockTestResult } from '@/types/mock-test'
-import type { SpeakingResult } from '@/lib/db'
+import type { SpeakingResult, VocabProgress, ListeningProgress, WritingProgress } from '@/lib/db'
 
 interface DailyLog { date: string; wordsReviewed: number; exercisesDone: number; quizTaken: number; streak: number }
 interface QuizResult { date: number; skill: string; score: number; total: number }
@@ -22,8 +22,8 @@ interface Achievement { type: string; unlockedAt: number }
 
 const achievementLabels: Record<string, { label: string; icon: string }> = {
   streak_3: { label: '3 ngày liên tiếp', icon: '🔥' },
-  streak_7: { label: '7 ngày liên tiếp', icon: '🔥' },
-  streak_30: { label: '30 ngày liên tiếp', icon: '🔥' },
+  streak_7: { label: '7 ngày liên tiếp', icon: '🔥🔥' },
+  streak_30: { label: '30 ngày liên tiếp', icon: '🔥🔥🔥' },
 }
 
 export default function ProgressPage() {
@@ -36,6 +36,9 @@ export default function ProgressPage() {
   const [speakingResults, setSpeakingResults] = useState<SpeakingResult[]>([])
   const [grammarScores, setGrammarScores] = useState<Record<number, number>>({})
   const [readingScores, setReadingScores] = useState<Record<number, number>>({})
+  const [vocabProgress, setVocabProgress] = useState<VocabProgress[]>([])
+  const [listeningProgress, setListeningProgress] = useState<ListeningProgress[]>([])
+  const [writingProgress, setWritingProgress] = useState<WritingProgress[]>([])
 
   useEffect(() => {
     ;(async () => {
@@ -45,6 +48,9 @@ export default function ProgressPage() {
       setAchievements(await getAchievements(level))
       setMockTests(await getMockTestResults())
       setSpeakingResults(await getSpeakingResults())
+      setVocabProgress(await getAllVocabProgress(level))
+      setListeningProgress(await getAllListeningProgress(level))
+      setWritingProgress(await getAllWritingProgress(level))
     })()
     const gs = localStorage.getItem(`grammar_scores_${level}`)
     if (gs) setGrammarScores(JSON.parse(gs))
@@ -68,6 +74,17 @@ export default function ProgressPage() {
     ? Math.round(Object.values(readingScores).reduce((a, b) => a + b, 0) / completedReading)
     : 0
 
+  const learnedCount = vocabProgress.filter((p) => p.learned).length
+  const listeningCompleted = listeningProgress.length
+  const writingCompleted = writingProgress.length
+  const speakingWithBand = speakingResults.filter((r) => r.estimatedBand && r.estimatedBand >= 4).length
+
+  const formatPct = (done: number, total: number) => total > 0 ? ` (${Math.round((done / total) * 100)}%)` : ''
+
+  const speakingCompletedText = speakingResults.length > 0
+    ? `${speakingWithBand}/${speakingResults.length}${formatPct(speakingWithBand, speakingResults.length)}`
+    : 'Chưa làm'
+
   const avgQuiz = quizResults.length > 0
     ? Math.round(quizResults.reduce((s, r) => s + (r.score / r.total) * 100, 0) / quizResults.length)
     : 0
@@ -75,11 +92,12 @@ export default function ProgressPage() {
   const totalActivities = logs.reduce((s, l) => s + l.wordsReviewed + l.exercisesDone + l.quizTaken, 0)
 
   const skillStats = [
-    { label: 'Từ vựng', icon: BookOpen, value: totalVocab, completed: 0, color: 'bg-kawaii-pink/20 text-kawaii-pink-dark' },
-    { label: 'Ngữ pháp', icon: BookText, value: `${avgGrammar}%`, completed: `${completedGrammar}/${totalGrammar}`, color: 'bg-kawaii-lavender/20 text-kawaii-lavender-dark' },
-    { label: 'Đọc hiểu', icon: Sparkles, value: `${avgReading}%`, completed: `${completedReading}/${totalReading}`, color: 'bg-kawaii-mint/30 text-green-700' },
-    { label: 'Nghe', icon: Headphones, value: `${totalListening} bài`, completed: '', color: 'bg-kawaii-peach/30 text-orange-700' },
-    { label: 'Viết', icon: PenTool, value: `${totalWriting} đề`, completed: '', color: 'bg-kawaii-yellow/40 text-yellow-700' },
+    { label: 'Từ vựng', icon: BookOpen, value: `${totalVocab} từ`, completed: `${learnedCount}/${totalVocab}${formatPct(learnedCount, totalVocab)}`, color: 'bg-kawaii-pink/20 text-kawaii-pink-dark' },
+    { label: 'Ngữ pháp', icon: BookText, value: `${avgGrammar}%`, completed: `${completedGrammar}/${totalGrammar}${formatPct(completedGrammar, totalGrammar)}`, color: 'bg-kawaii-lavender/20 text-kawaii-lavender-dark' },
+    { label: 'Đọc hiểu', icon: Sparkles, value: `${avgReading}%`, completed: `${completedReading}/${totalReading}${formatPct(completedReading, totalReading)}`, color: 'bg-kawaii-mint/30 text-green-700' },
+    { label: 'Nghe', icon: Headphones, value: `${totalListening} bài`, completed: `${listeningCompleted}/${totalListening}${formatPct(listeningCompleted, totalListening)}`, color: 'bg-kawaii-peach/30 text-orange-700' },
+    { label: 'Viết', icon: PenTool, value: `${totalWriting} đề`, completed: `${writingCompleted}/${totalWriting}${formatPct(writingCompleted, totalWriting)}`, color: 'bg-kawaii-yellow/40 text-yellow-700' },
+    { label: 'Nói', icon: Mic, value: `${speakingResults.length} bài`, completed: speakingCompletedText, color: 'bg-pink-100 text-pink-600' },
   ]
 
   return (
@@ -121,7 +139,15 @@ export default function ProgressPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {skillStats.map((skill, i) => {
             const Icon = skill.icon
-            const progress = skill.label === 'Từ vựng' ? 0 : skill.label === 'Ngữ pháp' ? avgGrammar : skill.label === 'Đọc hiểu' ? avgReading : 0
+            const progressMap: Record<string, number> = {
+              'Từ vựng': totalVocab > 0 ? Math.round((learnedCount / totalVocab) * 100) : 0,
+              'Ngữ pháp': avgGrammar,
+              'Đọc hiểu': avgReading,
+              'Nghe': totalListening > 0 ? Math.round((listeningCompleted / totalListening) * 100) : 0,
+              'Viết': totalWriting > 0 ? Math.round((writingCompleted / totalWriting) * 100) : 0,
+              'Nói': speakingResults.length > 0 ? Math.round((speakingWithBand / speakingResults.length) * 100) : 0,
+            }
+            const ringProgress = progressMap[skill.label] ?? 0
             return (
               <motion.div
                 key={skill.label}
@@ -139,9 +165,7 @@ export default function ProgressPage() {
                       <p className="text-sm text-kawaii-text-light">{skill.value}</p>
                       {skill.completed && <p className="text-xs text-kawaii-text-light/60">Đã làm: {skill.completed}</p>}
                     </div>
-                    {skill.label !== 'Từ vựng' && skill.label !== 'Nghe' && skill.label !== 'Viết' && (
-                      <ProgressRing progress={progress} size={44} strokeWidth={4} />
-                    )}
+                    <ProgressRing progress={ringProgress} size={44} strokeWidth={4} />
                   </div>
                 </KawaiiCard>
               </motion.div>

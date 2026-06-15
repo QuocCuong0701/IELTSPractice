@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Clock, Target, Trophy } from 'lucide-react'
 import KawaiiCard from '@/components/ui/KawaiiCard'
@@ -18,10 +18,9 @@ const sectionColors: Record<string, 'pink' | 'lavender' | 'mint' | 'peach' | 'ye
   speaking: 'yellow',
 }
 
-export default function MockTestResultPage({ params }: { params: Promise<{ id: string }> }) {
+export default function MockTestResultPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const resolved = use(params)
-  const test = mockTestList.find((t) => t.id === resolved.id)
+  const test = mockTestList.find((t) => t.id === params.id)
 
   const [result, setResult] = useState<MockTestResultType | null>(null)
 

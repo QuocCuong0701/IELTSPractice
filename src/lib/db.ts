@@ -58,6 +58,28 @@ export interface SpeakingResult {
   selfEval: Record<string, boolean>
 }
 
+export interface ListeningProgress {
+  id?: number
+  level: Level
+  itemId: number
+  score: number
+  total: number
+  date: number
+  timeSpent?: number
+  metadata?: string
+}
+
+export interface WritingProgress {
+  id?: number
+  level: Level
+  itemId: number
+  score: number
+  total: number
+  date: number
+  wordCount?: number
+  metadata?: string
+}
+
 class EnglishDB extends Dexie {
   vocabProgress!: Table<VocabProgress, number>
   quizResults!: Table<QuizResult, number>
@@ -65,17 +87,22 @@ class EnglishDB extends Dexie {
   achievements!: Table<Achievement, number>
   mockTestResults!: Table<MockTestResult, number>
   speakingResults!: Table<SpeakingResult, number>
+  listeningProgress!: Table<ListeningProgress, number>
+  writingProgress!: Table<WritingProgress, number>
 
   constructor() {
     super('KawaiiEnglishDB')
     // v1–2: initial schema; v3 skipped (schema unchanged); v4: added mockTestResults & speakingResults
-    this.version(4).stores({
+    // v5: added listeningProgress & writingProgress
+    this.version(5).stores({
       vocabProgress: '++id, level, wordId, nextReview',
       quizResults: '++id, level, date, skill',
       dailyLogs: '++id, level, date',
       achievements: '++id, level, type',
       mockTestResults: '++id, testId, date',
       speakingResults: '++id, level, date, part',
+      listeningProgress: '++id, level, itemId, date',
+      writingProgress: '++id, level, itemId, date',
     })
   }
 }
@@ -251,6 +278,26 @@ export async function saveSpeakingResult(result: SpeakingResult) {
 export async function getSpeakingResults(level?: Level) {
   if (level) return db.speakingResults.where({ level }).reverse().sortBy('date')
   return db.speakingResults.reverse().sortBy('date')
+}
+
+export async function saveListeningProgress(level: Level, itemId: number, score: number, total: number, timeSpent?: number) {
+  return db.listeningProgress.add({ level, itemId, score, total, date: Date.now(), timeSpent })
+}
+
+export async function getAllListeningProgress(level: Level) {
+  return db.listeningProgress.where({ level }).toArray()
+}
+
+export async function saveWritingProgress(level: Level, itemId: number, score: number, total: number, wordCount?: number) {
+  return db.writingProgress.add({ level, itemId, score, total, date: Date.now(), wordCount })
+}
+
+export async function getAllWritingProgress(level: Level) {
+  return db.writingProgress.where({ level }).toArray()
+}
+
+export async function getAllVocabProgress(level: Level) {
+  return db.vocabProgress.where({ level }).toArray()
 }
 
 export default db

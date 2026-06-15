@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Volume2, Check, X, FileText, Settings2 } from 'lucide-react'
 import Confetti from '@/components/ui/Confetti'
@@ -9,7 +9,7 @@ import KawaiiButton from '@/components/ui/KawaiiButton'
 import Badge from '@/components/ui/Badge'
 import { useLevel } from '@/context/LevelContext'
 import { listeningData, type MCQQuestion, type NoteCompletionQuestion, type MapLabellingQuestion, type MatchingQuestion } from '@/data/listening'
-import { updateDailyLog } from '@/lib/db'
+import { updateDailyLog, saveListeningProgress } from '@/lib/db'
 
 const accents = ['en-GB', 'en-US', 'en-AU', 'en-IN'] as const
 const accentLabels: Record<string, string> = {
@@ -106,6 +106,19 @@ export default function ListeningPage() {
     if (correct === currentQuestion.correctMatches.length) setScore((s) => s + 1)
   }
 
+  const startTimeRef = useRef(Date.now())
+
+  // Reset timer when a new exercise is selected
+  const startExercise = (id: number) => {
+    setSelectedExercise(id)
+    setCurrentQ(0)
+    setScore(0)
+    setCompleted(false)
+    setShowTranscript(false)
+    setNoteInput('')
+    startTimeRef.current = Date.now()
+  }
+
   const handleNext = () => {
     if (!exercise) return
     if (currentQ < exercise.questions.length - 1) {
@@ -117,6 +130,8 @@ export default function ListeningPage() {
       setMatchingSelections({})
     } else {
       setCompleted(true)
+      const timeSpent = Math.round((Date.now() - startTimeRef.current) / 1000)
+      saveListeningProgress(level, exercise.id, score, exercise.questions.length, timeSpent)
       updateDailyLog('exercisesDone', level)
     }
   }
@@ -340,7 +355,7 @@ export default function ListeningPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <KawaiiCard color="peach" hoverable onClick={() => { setSelectedExercise(ex.id); setCurrentQ(0); setScore(0); setCompleted(false); setShowTranscript(false); setNoteInput('') }}>
+            <KawaiiCard color="peach" hoverable onClick={() => startExercise(ex.id)}>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-kawaii bg-kawaii-peach/30 flex items-center justify-center shrink-0 text-xl">
                   {sectionIcons[ex.section]}

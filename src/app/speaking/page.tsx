@@ -56,6 +56,10 @@ export default function SpeakingPage() {
   const chunks = useRef<Blob[]>([])
   const prepTimer = useRef<NodeJS.Timeout | null>(null)
   const recognition = useRef<any>(null)
+  const [micDevices, setMicDevices] = useState<MediaDeviceInfo[]>([])
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('')
+  const [micError, setMicError] = useState<string | null>(null)
+  const [micStatus, setMicStatus] = useState<'checking' | 'ready' | 'error' | 'no-device'>('checking')
 
   useEffect(() => {
     return () => {
@@ -66,6 +70,70 @@ export default function SpeakingPage() {
       }
     }
   }, [audioUrl])
+
+  const checkMicAvailability = useCallback(async () => {
+    setMicStatus('checking')
+    setMicError(null)
+    try {
+      // Check permission state (gracefully fall back if permissions.query not supported)
+      try {
+        const permResult = await navigator.permissions.query({ name: 'microphone' as PermissionName })
+        if (permResult.state === 'denied') {
+          setMicStatus('error')
+          setMicError('Microphone đã bị chặn trong trình duyệt. Hãy mở cài đặt trang web và cho phép truy cập microphone.')
+          return
+        }
+      } catch {
+        // permissions.query not supported; continue with getUserMedia
+      }
+
+      // Enumerate audio input devices
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      const audioInputs = devices.filter(d => d.kind === 'audioinput')
+      setMicDevices(audioInputs)
+
+      if (audioInputs.length === 0) {
+        setMicStatus('no-device')
+        setMicError('Không tìm thấy thiết bị thu âm nào trên máy tính của bạn. Hãy kết nối microphone và thử lại.')
+        return
+      }
+
+      // Auto-select default if none selected
+      if (!selectedDeviceId && audioInputs.length > 0) {
+        setSelectedDeviceId(audioInputs[0].deviceId)
+      }
+
+      // Try accessing mic to confirm it really works
+      const constraints = selectedDeviceId
+        ? { audio: { deviceId: { exact: selectedDeviceId } } }
+        : { audio: true }
+      const testStream = await navigator.mediaDevices.getUserMedia(constraints)
+      testStream.getTracks().forEach(t => t.stop())
+      setMicStatus('ready')
+      setMicError(null)
+    } catch (err: any) {
+      console.error('[Mic Check]', err.name || err, err.message)
+      setMicStatus('error')
+      if (err.name === 'NotFoundError') {
+        setMicError('Không tìm thấy microphone. Hãy kiểm tra thiết bị thu âm đã được kết nối và bật.')
+      } else if (err.name === 'NotAllowedError') {
+        setMicError('Không thể truy cập microphone. Vui lòng cho phép quyền truy cập microphone trong trình duyệt.')
+      } else if (err.name === 'NotReadableError') {
+        setMicError('Microphone đang được sử dụng bởi ứng dụng khác. Vui lòng đóng các ứng dụng khác và thử lại.')
+      } else {
+        setMicError('Lỗi khi truy cập microphone: ' + (err.message || 'Không xác định') + '. Vui lòng thử lại.')
+      }
+    }
+  }, [selectedDeviceId])
+
+  // Check mic on mount and re-check when devices change
+  useEffect(() => {
+    checkMicAvailability()
+    if (navigator.mediaDevices) {
+      navigator.mediaDevices.addEventListener('devicechange', checkMicAvailability)
+      return () => navigator.mediaDevices.removeEventListener('devicechange', checkMicAvailability)
+    }
+  }, [checkMicAvailability])
 
   const visibleTopics = speakingData.filter(
     (t) => (selectedPart ? t.part === selectedPart : true) && t.level.includes(level)
@@ -123,8 +191,12 @@ export default function SpeakingPage() {
   }
 
   const startRecording = useCallback(async () => {
+    setMicError(null)
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const constraints = selectedDeviceId
+        ? { audio: { deviceId: { exact: selectedDeviceId } } }
+        : { audio: true }
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
       const mr = new MediaRecorder(stream)
       mediaRecorder.current = mr
       chunks.current = []
@@ -146,10 +218,20 @@ export default function SpeakingPage() {
       setTranscript('')
       setInterimTranscript('')
       startSTT()
-    } catch {
-      alert('Không thể truy cập microphone. Vui lòng cho phép quyền truy cập.')
+    } catch (err: any) {
+      console.error('[Mic Error]', err.name || err, err.message)
+      setMicStatus('error')
+      if (err.name === 'NotFoundError') {
+        setMicError('Không tìm thấy microphone. Hãy kiểm tra thiết bị thu âm đã được kết nối và bật.')
+      } else if (err.name === 'NotAllowedError') {
+        setMicError('Không thể truy cập microphone. Vui lòng cho phép quyền truy cập microphone trong trình duyệt.')
+      } else if (err.name === 'NotReadableError') {
+        setMicError('Microphone đang được sử dụng bởi ứng dụng khác. Vui lòng đóng các ứng dụng khác và thử lại.')
+      } else {
+        setMicError('Lỗi khi truy cập microphone: ' + (err.message || 'Không xác định') + '. Vui lòng thử lại.')
+      }
     }
-  }, [])
+  }, [selectedDeviceId])
 
   const stopRecording = () => {
     if (mediaRecorder.current && mediaRecorder.current.state !== 'inactive') {
@@ -444,14 +526,67 @@ export default function SpeakingPage() {
               {t.part === 2 ? 'Ghi âm câu trả lời (1-2 phút)' : recording ? 'Đang ghi âm...' : 'Nhấn ghi âm để bắt đầu'}
             </p>
 
+            {/* Mic status, device selector & retry */}
+            {!recording && !audioUrl && (
+              <div className="space-y-2">
+                {micStatus === 'checking' && (
+                  <p className="text-xs text-kawaii-text-light">🔍 Đang kiểm tra microphone...</p>
+                )}
+                {micStatus === 'error' && micError && (
+                  <div className="bg-red-50 dark:bg-red-900/20 rounded-kawaii p-3">
+                    <p className="text-xs text-red-600 dark:text-red-400 text-left">{micError}</p>
+                    <button
+                      onClick={checkMicAvailability}
+                      className="mt-2 text-xs font-bold text-kawaii-pink-dark hover:text-kawaii-pink flex items-center gap-1 mx-auto"
+                    >
+                      <RefreshCw size={12} /> Thử lại
+                    </button>
+                  </div>
+                )}
+                {micStatus === 'no-device' && micError && (
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-kawaii p-3">
+                    <p className="text-xs text-yellow-700 dark:text-yellow-400 text-left">{micError}</p>
+                    <button
+                      onClick={checkMicAvailability}
+                      className="mt-2 text-xs font-bold text-kawaii-pink-dark hover:text-kawaii-pink flex items-center gap-1 mx-auto"
+                    >
+                      <RefreshCw size={12} /> Kiểm tra lại
+                    </button>
+                  </div>
+                )}
+                {micDevices.length > 1 && (
+                  <div className="flex items-center gap-2 justify-center">
+                    <label className="text-xs text-kawaii-text-light shrink-0">Microphone:</label>
+                    <select
+                      value={selectedDeviceId}
+                      onChange={(e) => setSelectedDeviceId(e.target.value)}
+                      className="text-xs rounded-lg border border-kawaii-lavender/20 bg-white dark:bg-kawaii-card-bg-dark px-2 py-1 text-kawaii-text dark:text-kawaii-text-dark max-w-[200px]"
+                    >
+                      {micDevices.map((d) => (
+                        <option key={d.deviceId} value={d.deviceId}>
+                          {d.label || 'Microphone ' + d.deviceId.slice(0, 8) + '...'}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {micStatus === 'ready' && (
+                  <p className="text-xs text-green-600 dark:text-green-400">✅ Microphone sẵn sàng</p>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center justify-center gap-4">
               {!recording && !audioUrl && (
                 <motion.button
                   onClick={startRecording}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-16 h-16 rounded-full bg-kawaii-pink flex items-center justify-center shadow-kawaii-sm"
-                  disabled={t.part === 2 && !prepping && prepTime !== 0}
+                  whileHover={micStatus === 'ready' ? { scale: 1.05 } : {}}
+                  whileTap={micStatus === 'ready' ? { scale: 0.95 } : {}}
+                  className={'w-16 h-16 rounded-full flex items-center justify-center shadow-kawaii-sm ' + (micStatus === 'ready'
+                    ? 'bg-kawaii-pink cursor-pointer'
+                    : 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
+                  )}
+                  disabled={micStatus !== 'ready' || (t.part === 2 && !prepping && prepTime !== 0)}
                 >
                   <Mic size={28} className="text-white" />
                 </motion.button>

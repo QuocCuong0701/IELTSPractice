@@ -58,7 +58,7 @@ export const listeningData: Record<Level, ListeningExercise[]> = {
         { id: 1, type: 'mcq', question: 'Where is Tom from?', options: ['America', 'England', 'Australia', 'Canada'], correctIndex: 1 },
         { id: 2, type: 'mcq', question: 'How many brothers does Tom have?', options: ['One', 'Two', 'Three', 'None'], correctIndex: 0 },
         { id: 3, type: 'mcq', question: 'What time does Tom get up?', options: ['5:00', '6:00', '7:00', '8:00'], correctIndex: 1 },
-        { id: 4, type: 'note-completion', context: 'Tom\'s favorite color is ______.', answer: 'blue', acceptableAnswers: ['blue'] },
+        { id: 4, type: 'note-completion', context: 'Tom\'s favourite colour is ______.', answer: 'blue', acceptableAnswers: ['blue'] },
         { id: 5, type: 'mcq', question: 'What fruit does Tom like?', options: ['Oranges and grapes', 'Apples and bananas', 'Pears and peaches', 'Cherries and plums'], correctIndex: 1 },
       ],
     },

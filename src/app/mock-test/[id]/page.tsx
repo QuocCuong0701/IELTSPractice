@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, use, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Check, X, Headphones, BookOpen, PenTool, Mic, AlertTriangle } from 'lucide-react'
 import KawaiiCard from '@/components/ui/KawaiiCard'
@@ -27,8 +27,8 @@ const sectionColors: Record<string, 'pink' | 'lavender' | 'mint' | 'peach' | 'ye
   speaking: 'yellow',
 }
 
-export default function MockTestPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
+export default function MockTestPage({ params }: { params: { id: string } }) {
+  const { id } = params
   const router = useRouter()
   const { level } = useLevel()
 
@@ -113,6 +113,20 @@ export default function MockTestPage({ params }: { params: Promise<{ id: string 
     handleSubmitSection()
   }, [handleSubmitSection])
 
+  useEffect(() => {
+    if (submitted && sectionScores.length > 0) {
+      const overallBand = calculateOverallBand(sectionScores.map((r) => r.bandEstimate))
+      const resultData: MockTestResult = {
+        testId: test.id,
+        date: Date.now(),
+        sectionResults: sectionScores,
+        overallBand,
+      }
+      sessionStorage.setItem('mockTestResult', JSON.stringify(resultData))
+      saveMockTestResult(resultData)
+    }
+  }, [submitted, sectionScores, test.id])
+
   if (!started) {
     return (
       <div className="max-w-2xl mx-auto">
@@ -155,20 +169,6 @@ export default function MockTestPage({ params }: { params: Promise<{ id: string 
       </div>
     )
   }
-
-  useEffect(() => {
-    if (submitted && sectionScores.length > 0) {
-      const overallBand = calculateOverallBand(sectionScores.map((r) => r.bandEstimate))
-      const resultData: MockTestResult = {
-        testId: test.id,
-        date: Date.now(),
-        sectionResults: sectionScores,
-        overallBand,
-      }
-      sessionStorage.setItem('mockTestResult', JSON.stringify(resultData))
-      saveMockTestResult(resultData)
-    }
-  }, [submitted, sectionScores, test.id])
 
   if (submitted) {
     const allResults = sectionScores
