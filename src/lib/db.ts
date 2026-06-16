@@ -94,10 +94,11 @@ class EnglishDB extends Dexie {
     super('KawaiiEnglishDB')
     // v1–2: initial schema; v3 skipped (schema unchanged); v4: added mockTestResults & speakingResults
     // v5: added listeningProgress & writingProgress
-    this.version(5).stores({
+    // v6: added compound index [date+level] on dailyLogs for faster date+level queries
+    this.version(6).stores({
       vocabProgress: '++id, level, wordId, nextReview',
       quizResults: '++id, level, date, skill',
-      dailyLogs: '++id, level, date',
+      dailyLogs: '++id, level, date, [date+level]',
       achievements: '++id, level, type',
       mockTestResults: '++id, testId, date',
       speakingResults: '++id, level, date, part',

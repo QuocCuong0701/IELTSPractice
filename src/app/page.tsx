@@ -137,7 +137,7 @@ export default function Dashboard() {
           >
             <KawaiiCard color="white" className="text-center">
               <stat.icon size={24} className={`mx-auto mb-2 ${stat.color}`} />
-              <p className="text-2xl font-extrabold text-kawaii-text">{stat.value}</p>
+              <p className="text-2xl font-extrabold text-kawaii-text" suppressHydrationWarning>{stat.value}</p>
               <p className="text-xs text-kawaii-text-light font-semibold">{stat.label}</p>
             </KawaiiCard>
           </motion.div>

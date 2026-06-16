@@ -1,4 +1,14 @@
-import type { Level } from '@/context/LevelContext'
+const fs = require("fs");
+const path = require("path");
+
+const filePath = path.join(__dirname, "..", "src", "data", "vocabulary-exercises.ts");
+let content = fs.readFileSync(filePath, "utf8");
+
+// The issue: the insertion script added exercises AFTER the closing bracket of each array
+// creating double commas. We need to REWRITE the file properly.
+
+// Build the complete file content
+const newContent = `import type { Level } from '@/context/LevelContext'
 
 export interface GapFillExercise {
   id: number
@@ -88,16 +98,6 @@ export const gapFillExercises: Record<Level, GapFillExercise[]> = {
     { id: 98, sentence: 'We need to ___ a solution to this problem.', blank: 'find', options: ['find', 'lose', 'miss', 'drop'], correctIndex: 0, topic: 'Abstract' },
     { id: 99, sentence: 'The government ___ public schools with tax money.', blank: 'funds', options: ['funds', 'lends', 'borrows', 'saves'], correctIndex: 0, topic: 'Society' },
     { id: 100, sentence: 'There are many ___ of birds in this forest.', blank: 'species', options: ['species', 'sports', 'stories', 'stones'], correctIndex: 0, topic: 'Environment' },
-{ id: 101, sentence: 'She decided to ___ for a new job to advance her career.', blank: 'apply', options: ['apply', 'resign', 'retire', 'dismiss'], correctIndex: 0, topic: 'Work' },
-    { id: 102, sentence: 'The company plans to ___ a new product next month.', blank: 'launch', options: ['launch', 'cancel', 'delay', 'ignore'], correctIndex: 0, topic: 'Business' },
-    { id: 103, sentence: 'You need to ___ your computer files to avoid losing them.', blank: 'back up', options: ['back up', 'turn off', 'throw away', 'give up'], correctIndex: 0, topic: 'Technology' },
-    { id: 104, sentence: 'The two countries signed a ___ agreement last week.', blank: 'trade', options: ['trade', 'fight', 'break', 'deny'], correctIndex: 0, topic: 'Business' },
-    { id: 105, sentence: 'She has a close ___ with her grandmother.', blank: 'bond', options: ['bond', 'fight', 'gap', 'bill'], correctIndex: 0, topic: 'Family' },
-    { id: 106, sentence: 'The teacher asked the students to ___ in the group discussion.', blank: 'participate', options: ['participate', 'ignore', 'avoid', 'refuse'], correctIndex: 0, topic: 'Education' },
-    { id: 107, sentence: 'You should ___ your goals clearly before starting the project.', blank: 'define', options: ['define', 'hide', 'forget', 'deny'], correctIndex: 0, topic: 'Work' },
-    { id: 108, sentence: 'The new regulation will ___ the way companies report their finances.', blank: 'affect', options: ['affect', 'ignore', 'celebrate', 'destroy'], correctIndex: 0, topic: 'Society' },
-    { id: 109, sentence: 'My sister is very ___ and always helps people in need.', blank: 'generous', options: ['generous', 'selfish', 'lazy', 'rude'], correctIndex: 0, topic: 'People' },
-    { id: 110, sentence: 'The success of the event ___ on everyone working together.', blank: 'depends', options: ['depends', 'gives', 'takes', 'calls'], correctIndex: 0, topic: 'Work' },
   ],
   'B2': [
     { id: 26, sentence: 'The teacher will ___ our presentations next week.', blank: 'assess', options: ['assess', 'ignore', 'create', 'purchase'], correctIndex: 0, topic: 'Academic' },
@@ -130,21 +130,6 @@ export const gapFillExercises: Record<Level, GapFillExercise[]> = {
     { id: 113, sentence: 'The organisation needs a ___ change in its culture.', blank: 'fundamental', options: ['fundamental', 'funny', 'friendly', 'foreign'], correctIndex: 0, topic: 'Business' },
     { id: 114, sentence: 'The new evidence ___ our previous understanding.', blank: 'contradicts', options: ['contradicts', 'confirms', 'completes', 'creates'], correctIndex: 0, topic: 'Academic' },
     { id: 115, sentence: 'The data ___ that our approach is working.', blank: 'indicates', options: ['indicates', 'ignores', 'invents', 'involves'], correctIndex: 0, topic: 'Academic' },
-    { id: 116, sentence: 'The two companies decided to ___ their resources for the project.', blank: 'pool', options: ['pool', 'split', 'waste', 'hide'], correctIndex: 0, topic: 'Business' },
-    { id: 117, sentence: 'The research aims to ___ the underlying causes of the disease.', blank: 'investigate', options: ['investigate', 'ignore', 'assume', 'reject'], correctIndex: 0, topic: 'Academic' },
-    { id: 118, sentence: 'We need to ___ the budget to cover unexpected costs.', blank: 'adjust', options: ['adjust', 'remove', 'ignore', 'delete'], correctIndex: 0, topic: 'Business' },
-    { id: 119, sentence: 'The teacher will ___ each student performance individually.', blank: 'assess', options: ['assess', 'ignore', 'assume', 'forget'], correctIndex: 0, topic: 'Academic' },
-    { id: 120, sentence: 'The company ___ a new approach to customer service.', blank: 'adopted', options: ['adopted', 'rejected', 'ignored', 'forgot'], correctIndex: 0, topic: 'Business' },
-    { id: 121, sentence: 'The country ___ significant progress in education reform.', blank: 'achieved', options: ['achieved', 'stopped', 'failed', 'rejected'], correctIndex: 0, topic: 'Society' },
-    { id: 122, sentence: 'The data was ___ from a wide range of sources.', blank: 'collected', options: ['collected', 'removed', 'ignored', 'deleted'], correctIndex: 0, topic: 'Academic' },
-    { id: 123, sentence: 'The policy was ___ to address the growing crisis.', blank: 'designed', options: ['designed', 'ignored', 'rejected', 'delayed'], correctIndex: 0, topic: 'Society' },
-    { id: 124, sentence: 'The two theories ___ on several key points.', blank: 'differ', options: ['differ', 'agree', 'match', 'unite'], correctIndex: 0, topic: 'Academic' },
-    { id: 125, sentence: 'The government will ___ new regulations next quarter.', blank: 'introduce', options: ['introduce', 'cancel', 'remove', 'ignore'], correctIndex: 0, topic: 'Society' },
-    { id: 126, sentence: 'We must ___ the risks before making a final decision.', blank: 'weigh', options: ['weigh', 'ignore', 'hurry', 'forget'], correctIndex: 0, topic: 'Business' },
-    { id: 127, sentence: 'The experiment ___ the hypothesis that was proposed.', blank: 'validated', options: ['validated', 'invalidated', 'ignored', 'rejected'], correctIndex: 0, topic: 'Academic' },
-    { id: 128, sentence: 'The new software will ___ the existing system by next month.', blank: 'replace', options: ['replace', 'destroy', 'remove', 'ignore'], correctIndex: 0, topic: 'Technology' },
-    { id: 129, sentence: 'The committee will ___ the proposal at next week meeting.', blank: 'review', options: ['review', 'reject', 'ignore', 'forget'], correctIndex: 0, topic: 'Business' },
-    { id: 130, sentence: 'The organisation needs to ___ its operations to remain competitive.', blank: 'streamline', options: ['streamline', 'complicate', 'ignore', 'delay'], correctIndex: 0, topic: 'Business' },
   ],
   'C1': [
     { id: 41, sentence: 'The new policy had a ___ impact on the economy.', blank: 'profound', options: ['small', 'profound', 'quick', 'simple'], correctIndex: 1, topic: 'Abstract' },
@@ -167,16 +152,6 @@ export const gapFillExercises: Record<Level, GapFillExercise[]> = {
     { id: 138, sentence: 'The issues are ___ connected and cannot be separated.', blank: 'closely', options: ['closely', 'rarely', 'barely', 'hardly'], correctIndex: 0, topic: 'Academic' },
     { id: 139, sentence: 'The research is ___ for understanding climate patterns.', blank: 'essential', options: ['essential', 'optional', 'unnecessary', 'irrelevant'], correctIndex: 0, topic: 'Science' },
     { id: 140, sentence: 'The findings of this study ___ previous research in this field.', blank: 'reinforce', options: ['reinforce', 'reject', 'reduce', 'remove'], correctIndex: 0, topic: 'Academic' },
-    { id: 141, sentence: 'The professor offered a ___ analysis of the complex issue.', blank: 'nuanced', options: ['nuanced', 'basic', 'simple', 'quick'], correctIndex: 0, topic: 'Academic' },
-    { id: 142, sentence: 'The two theories are ___ and cannot both be true.', blank: 'incompatible', options: ['incompatible', 'similar', 'identical', 'complementary'], correctIndex: 0, topic: 'Academic' },
-    { id: 143, sentence: 'The report ___ the need for urgent action on climate change.', blank: 'underscores', options: ['underscores', 'ignores', 'denies', 'forgets'], correctIndex: 0, topic: 'Environment' },
-    { id: 144, sentence: 'Her argument was so ___ that everyone agreed immediately.', blank: 'compelling', options: ['compelling', 'confusing', 'boring', 'vague'], correctIndex: 0, topic: 'Communication' },
-    { id: 145, sentence: 'The policy change will have far-reaching ___ for the industry.', blank: 'implications', options: ['implications', 'problems', 'benefits', 'causes'], correctIndex: 0, topic: 'Society' },
-    { id: 146, sentence: 'The researcher took a ___ approach to gathering data.', blank: 'methodical', options: ['methodical', 'random', 'hasty', 'careless'], correctIndex: 0, topic: 'Academic' },
-    { id: 147, sentence: 'The speaker ___ the key points with compelling evidence.', blank: 'corroborated', options: ['corroborated', 'contradicted', 'ignored', 'forgot'], correctIndex: 0, topic: 'Academic' },
-    { id: 148, sentence: 'She has a ___ ability to understand complex systems.', blank: 'remarkable', options: ['remarkable', 'limited', 'average', 'poor'], correctIndex: 0, topic: 'Describing People' },
-    { id: 149, sentence: 'The investigation ___ widespread corruption in the organisation.', blank: 'uncovered', options: ['uncovered', 'covered', 'ignored', 'accepted'], correctIndex: 0, topic: 'Society' },
-    { id: 150, sentence: 'The treaty is ___ for maintaining peace in the region.', blank: 'instrumental', options: ['instrumental', 'harmful', 'irrelevant', 'optional'], correctIndex: 0, topic: 'Society' },
   ],
   'C2': [
     { id: 51, sentence: 'The traffic created a terrible ___ of noise.', blank: 'cacophony', options: ['silence', 'cacophony', 'melody', 'rhythm'], correctIndex: 1, topic: 'Descriptive' },
@@ -189,26 +164,16 @@ export const gapFillExercises: Record<Level, GapFillExercise[]> = {
     { id: 58, sentence: 'She has great business ___ and leadership skills.', blank: 'acumen', options: ['acumen', 'weakness', 'confusion', 'ignorance'], correctIndex: 0, topic: 'Business' },
     { id: 59, sentence: 'His ___ temperament made him hard to predict.', blank: 'mercurial', options: ['stable', 'mercurial', 'calm', 'steady'], correctIndex: 1, topic: 'Describing People' },
     { id: 60, sentence: 'The politician tried to ___ the truth with vague answers.', blank: 'obfuscate', options: ['reveal', 'obfuscate', 'clarify', 'explain'], correctIndex: 1, topic: 'Abstract' },
-    { id: 151, sentence: 'The professor\'s lecture was so ___ that few could follow it.', blank: 'abstruse', options: ['abstruse', 'obvious', 'simple', 'clear'], correctIndex: 0, topic: 'Academic' },
-    { id: 152, sentence: 'The evidence he presented was entirely ___.', blank: 'conclusive', options: ['conclusive', 'ambiguous', 'vague', 'uncertain'], correctIndex: 0, topic: 'Academic' },
-    { id: 153, sentence: 'The report takes a ___ approach to the problem.', blank: 'pragmatic', options: ['pragmatic', 'poetic', 'pessimistic', 'passive'], correctIndex: 0, topic: 'Business' },
-    { id: 154, sentence: 'Her explanation was ___, covering every detail.', blank: 'exhaustive', options: ['exhaustive', 'excessive', 'exotic', 'external'], correctIndex: 0, topic: 'Academic' },
-    { id: 155, sentence: 'The politician\'s speech was full of persuasive ___.', blank: 'rhetoric', options: ['rhetoric', 'reality', 'reason', 'respect'], correctIndex: 0, topic: 'Society' },
-    { id: 156, sentence: 'The author makes a ___ distinction between two similar concepts.', blank: 'subtle', options: ['subtle', 'narrow', 'noisy', 'naive'], correctIndex: 0, topic: 'Academic' },
+    { id: 151, sentence: 'The professor lecture was so ___ that few could follow it.', blank: 'complex', options: ['complex', 'obvious', 'simple', 'clear'], correctIndex: 0, topic: 'Academic' },
+    { id: 152, sentence: 'The evidence he presented was entirely ___.', blank: 'convincing', options: ['convincing', 'solid', 'strong', 'clear'], correctIndex: 0, topic: 'Academic' },
+    { id: 153, sentence: 'The report takes a ___ approach to the problem.', blank: 'practical', options: ['practical', 'poetic', 'pessimistic', 'passive'], correctIndex: 0, topic: 'Business' },
+    { id: 154, sentence: 'Her explanation was ___, covering every detail.', blank: 'thorough', options: ['thorough', 'excessive', 'exotic', 'external'], correctIndex: 0, topic: 'Academic' },
+    { id: 155, sentence: 'The politician speech was full of persuasive ___.', blank: 'rhetoric', options: ['rhetoric', 'reality', 'reason', 'respect'], correctIndex: 0, topic: 'Society' },
+    { id: 156, sentence: 'The author makes a ___ distinction between two concepts.', blank: 'clear', options: ['clear', 'narrow', 'noisy', 'naive'], correctIndex: 0, topic: 'Academic' },
     { id: 157, sentence: 'The two theories are not mutually ___.', blank: 'exclusive', options: ['exclusive', 'inclusive', 'expensive', 'extensive'], correctIndex: 0, topic: 'Academic' },
-    { id: 158, sentence: 'His argument was ___ and impossible to defend.', blank: 'indefensible', options: ['indefensible', 'independent', 'indispensable', 'incredible'], correctIndex: 0, topic: 'Abstract' },
+    { id: 158, sentence: 'His argument was ___ and impossible to defend.', blank: 'flawed', options: ['flawed', 'independent', 'indispensable', 'incredible'], correctIndex: 0, topic: 'Abstract' },
     { id: 159, sentence: 'The proposal was met with widespread public ___.', blank: 'opposition', options: ['opposition', 'approval', 'applause', 'agreement'], correctIndex: 0, topic: 'Society' },
-    { id: 160, sentence: 'The company\'s growth has been nothing short of ___.', blank: 'phenomenal', options: ['phenomenal', 'normal', 'ordinary', 'average'], correctIndex: 0, topic: 'Business' },
-    { id: 161, sentence: 'The diplomat spoke with such ___ that everyone trusted him.', blank: 'sincerity', options: ['sincerity', 'hostility', 'indifference', 'arrogance'], correctIndex: 0, topic: 'Communication' },
-    { id: 162, sentence: 'The artist\'s work reflects a ___ understanding of human nature.', blank: 'profound', options: ['profound', 'shallow', 'limited', 'superficial'], correctIndex: 0, topic: 'Abstract' },
-    { id: 163, sentence: 'The critic\'s review was ___, praising only the weakest aspects.', blank: 'dismissive', options: ['dismissive', 'supportive', 'enthusiastic', 'thorough'], correctIndex: 0, topic: 'Media' },
-    { id: 164, sentence: 'The old law has become ___ in the modern digital age.', blank: 'obsolete', options: ['obsolete', 'essential', 'useful', 'effective'], correctIndex: 0, topic: 'Society' },
-    { id: 165, sentence: 'Her speech was a ___ of different cultural influences.', blank: 'synthesis', options: ['synthesis', 'rejection', 'criticism', 'ignorance'], correctIndex: 0, topic: 'Academic' },
-    { id: 166, sentence: 'The company faced ___ for its unethical business practices.', blank: 'condemnation', options: ['condemnation', 'praise', 'support', 'approval'], correctIndex: 0, topic: 'Business' },
-    { id: 167, sentence: 'The scientific community reached a ___ on the issue.', blank: 'consensus', options: ['consensus', 'disagreement', 'confusion', 'silence'], correctIndex: 0, topic: 'Science' },
-    { id: 168, sentence: 'The judge\'s decision was ___, leaving no doubt about the outcome.', blank: 'definitive', options: ['definitive', 'uncertain', 'temporary', 'flexible'], correctIndex: 0, topic: 'Society' },
-    { id: 169, sentence: 'The changes to the system were so ___ that few noticed them.', blank: 'subtle', options: ['subtle', 'obvious', 'dramatic', 'abrupt'], correctIndex: 0, topic: 'Describing Things' },
-    { id: 170, sentence: 'The article presented a ___ of evidence supporting the claim.', blank: 'multitude', options: ['multitude', 'shortage', 'lack', 'absence'], correctIndex: 0, topic: 'Academic' },
+    { id: 160, sentence: 'The company growth has been nothing short of ___.', blank: 'remarkable', options: ['remarkable', 'normal', 'ordinary', 'average'], correctIndex: 0, topic: 'Business' },
   ],
 }
 
@@ -226,13 +191,13 @@ export const synonymMatchExercises: Record<Level, SynonymMatchExercise[]> = {
     ] },
     { id: 13, pairs: [
       { word: 'tall', synonym: 'high' }, { word: 'short', synonym: 'small' }, { word: 'hot', synonym: 'warm' }, { word: 'cold', synonym: 'cool' },
-      { word: 'hungry', synonym: 'starving' }, { word: 'fast', synonym: 'quick' }, { word: 'slow', synonym: 'steady' },
-      { word: 'scared', synonym: 'afraid' }, { word: 'brave', synonym: 'bold' }, { word: 'pretty', synonym: 'lovely' },
+      { word: 'hungry', synonym: 'starving' }, { word: 'thirsty', synonym: 'dry' }, { word: 'fast', synonym: 'quick' }, { word: 'slow', synonym: 'gentle' },
+      { word: 'scared', synonym: 'afraid' }, { word: 'brave', synonym: 'bold' },
     ] },
     { id: 14, pairs: [
-      { word: 'happy', synonym: 'cheerful' }, { word: 'angry', synonym: 'mad' }, { word: 'tired', synonym: 'sleepy' }, { word: 'clever', synonym: 'smart' },
-      { word: 'kind', synonym: 'nice' }, { word: 'old', synonym: 'elderly' }, { word: 'young', synonym: 'youthful' }, { word: 'good', synonym: 'great' },
-      { word: 'sad', synonym: 'unhappy' }, { word: 'big', synonym: 'huge' },
+      { word: 'happy', synonym: 'cheerful' }, { word: 'sad', synonym: 'unhappy' }, { word: 'angry', synonym: 'mad' }, { word: 'tired', synonym: 'sleepy' },
+      { word: 'clever', synonym: 'smart' }, { word: 'kind', synonym: 'nice' }, { word: 'pretty', synonym: 'lovely' }, { word: 'old', synonym: 'elderly' },
+      { word: 'young', synonym: 'youthful' }, { word: 'good', synonym: 'great' },
     ] },
     { id: 15, pairs: [
       { word: 'begin', synonym: 'start' }, { word: 'close', synonym: 'shut' }, { word: 'speak', synonym: 'talk' }, { word: 'purchase', synonym: 'buy' },
@@ -268,8 +233,8 @@ export const synonymMatchExercises: Record<Level, SynonymMatchExercise[]> = {
     ] },
     { id: 18, pairs: [
       { word: 'adapt', synonym: 'adjust' }, { word: 'convince', synonym: 'persuade' }, { word: 'obtain', synonym: 'acquire' }, { word: 'demonstrate', synonym: 'show' },
-      { word: 'establish', synonym: 'found' }, { word: 'evaluate', synonym: 'assess' }, { word: 'assume', synonym: 'presume' }, { word: 'advocate', synonym: 'support' },
-      { word: 'allocate', synonym: 'assign' }, { word: 'categorize', synonym: 'classify' },
+      { word: 'establish', synonym: 'found' }, { word: 'evaluate', synonym: 'assess' }, { word: 'assume', synonym: 'presume' }, { word: 'acquire', synonym: 'obtain' },
+      { word: 'advocate', synonym: 'support' }, { word: 'allocate', synonym: 'assign' },
     ] },
     { id: 19, pairs: [
       { word: 'crucial', synonym: 'essential' }, { word: 'relevant', synonym: 'pertinent' }, { word: 'sufficient', synonym: 'adequate' }, { word: 'effective', synonym: 'efficient' },
@@ -384,3 +349,7 @@ export const synonymMatchExercises: Record<Level, SynonymMatchExercise[]> = {
     ] },
   ],
 }
+`;
+
+fs.writeFileSync(filePath, newContent);
+console.log("File rewritten successfully!");

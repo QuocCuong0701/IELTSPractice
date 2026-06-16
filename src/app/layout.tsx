@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     title: 'Kawaii Eng',
     statusBarStyle: 'default',
   },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 }
 
 export const viewport: Viewport = {
