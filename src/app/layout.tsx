@@ -120,6 +120,7 @@ export default function RootLayout({
     <html lang="vi" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/mascot.png" />
+        <meta name="google-site-verification" content="krRdiNMUMNIelICwWoV2_K_QXWWRUIJmJ0SE6D-i-7I" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

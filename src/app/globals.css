@@ -136,7 +136,70 @@
     background-image: radial-gradient(#C3AED6 1px, transparent 1px);
     background-size: 24px 24px;
   }
+}
 
+/* Blog prose styles */
+.prose-kawaii {
+  --tw-prose-body: #4A4063;
+  --tw-prose-headings: #4A4063;
+  --tw-prose-links: #FF8FA3;
+  --tw-prose-bold: #4A4063;
+  --tw-prose-counters: #8B7FAE;
+  --tw-prose-bullets: #C3AED6;
+  --tw-prose-hr: #C3AED6;
+  --tw-prose-quotes: #4A4063;
+  --tw-prose-quote-borders: #FFB5C2;
+  --tw-prose-code: #A88DC4;
+  --tw-prose-pre-code: #E8E0F0;
+  --tw-prose-pre-bg: #2a2540;
+}
+
+.dark .prose-kawaii {
+  --tw-prose-body: #E8E0F0;
+  --tw-prose-headings: #E8E0F0;
+  --tw-prose-links: #FFB5C2;
+  --tw-prose-bold: #E8E0F0;
+  --tw-prose-counters: #9B8FB5;
+  --tw-prose-bullets: #C3AED6;
+  --tw-prose-hr: #3A2D5C;
+  --tw-prose-quotes: #E8E0F0;
+  --tw-prose-quote-borders: #FFB5C2;
+  --tw-prose-code: #C3AED6;
+  --tw-prose-pre-code: #E8E0F0;
+  --tw-prose-pre-bg: #1a1625;
+}
+
+.prose-kawaii h2 {
+  @apply text-xl font-extrabold mt-8 mb-3;
+}
+
+.prose-kawaii h3 {
+  @apply text-lg font-bold mt-6 mb-2;
+}
+
+.prose-kawaii p {
+  @apply leading-relaxed mb-4;
+}
+
+.prose-kawaii ul,
+.prose-kawaii ol {
+  @apply my-4 pl-6;
+}
+
+.prose-kawaii li {
+  @apply mb-1;
+}
+
+.prose-kawaii a {
+  @apply underline decoration-kawaii-pink/40 underline-offset-2 hover:decoration-kawaii-pink transition-colors;
+}
+
+.prose-kawaii blockquote {
+  @apply border-l-4 border-kawaii-pink pl-4 italic;
+}
+
+.prose-kawaii strong {
+  @apply font-extrabold;
 }
 
 @media (prefers-reduced-motion: reduce) {

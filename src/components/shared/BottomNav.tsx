@@ -13,6 +13,7 @@ import {
   ClipboardList,
   FileCheck,
   BarChart3,
+  Newspaper,
 } from 'lucide-react'
 
 const links = [
@@ -26,6 +27,7 @@ const links = [
   { href: '/quiz', label: 'Quiz', icon: ClipboardList },
   { href: '/mock-test', label: 'Mock Test', icon: FileCheck },
   { href: '/progress', label: 'Tiến độ', icon: BarChart3 },
+  { href: '/blog', label: 'Blog', icon: Newspaper },
 ]
 
 export default function BottomNav() {
